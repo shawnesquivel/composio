@@ -13,7 +13,7 @@
     ],
     "toolCount": 62,
     "triggerCount": 2,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GMAIL_ADD_LABEL_TO_EMAIL",
@@ -400,7 +400,7 @@
     ],
     "toolCount": 25,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260420_00",
     "tools": [
       {
         "slug": "COMPOSIO_CHECK_ACTIVE_CONNECTION",
@@ -465,12 +465,12 @@
       {
         "slug": "COMPOSIO_MANAGE_CONNECTIONS",
         "name": "Manage connections",
-        "description": "\nCreate or manage connections to user's apps. Returns a branded authentication link that works for OAuth, API keys, and all other auth types.\n\nCall policy:\n- First call COMPOSIO_SEARCH_TOOLS for the user's query.\n- If COMPOSIO_SEARCH_TOOLS indicates there is no active connection for a toolkit, call COMPOSIO_MANAGE_CONNECTIONS with the exact toolkit name(s) returned.\n- Do not call COMPOSIO_MANAGE_CONNECTIONS if COMPOSIO_SEARCH_TOOLS returns no main tools and no related tools.\n- Toolkit names in toolkits must exactly match toolkit identifiers returned by COMPOSIO_SEARCH_TOOLS; never invent names.\n- NEVER execute any toolkit tool without an ACTIVE connection.\n\nTool Behavior:\n- If a connection is Active, the tool returns the connection details. Always use this to verify connection status and fetch metadata.\n- If a connection is not Active, returns a authentication link (redirect_url) to create new connection.\n- If reinitiate_all is true, the tool forces reconnections for all toolkits, even if they already have active connections.\n\nWorkflow after initiating connection:\n- Always show the returned redirect_url as a FORMATTED MARKDOWN LINK to the user, and ask them to click on the link to finish authentication.\n- Begin executing tools only after the connection for that toolkit is confirmed Active.\n    "
+        "description": "\nCreate or manage connections to user's apps. Returns a branded authentication link that works for OAuth, API keys, and all other auth types.\n\nCall policy:\n- First call COMPOSIO_SEARCH_TOOLS for the user's query.\n- If COMPOSIO_SEARCH_TOOLS indicates there is no active connection for a toolkit, call COMPOSIO_MANAGE_CONNECTIONS with the exact toolkit name(s) returned.\n- Do not call COMPOSIO_MANAGE_CONNECTIONS if COMPOSIO_SEARCH_TOOLS returns no main tools and no related tools.\n- Toolkit names in toolkits must exactly match toolkit slugs returned by COMPOSIO_SEARCH_TOOLS; never invent names.\n- NEVER execute any toolkit tool without an ACTIVE connection.\n\nTool Behavior:\n- If a connection is Active, the tool returns the connection details. Always use this to verify connection status and fetch metadata.\n- If a connection is not Active, returns a authentication link (redirect_url) to create new connection.\n- If reinitiate_all is true, the tool forces reconnections for all toolkits, even if they already have active connections.\n\nWorkflow after initiating connection:\n- Always show the returned redirect_url as a FORMATTED MARKDOWN LINK to the user, and ask them to click on the link to finish authentication.\n- Begin executing tools only after the connection for that toolkit is confirmed Active.\n    "
       },
       {
         "slug": "COMPOSIO_MULTI_EXECUTE_TOOL",
         "name": "Multi Execute Composio Tools",
-        "description": "\n  Fast and parallel tool executor for tools and recipes discovered through COMPOSIO_SEARCH_TOOLS. Use this tool to execute up to 50 tools in parallel across apps only when they're logically independent (no ordering/output dependencies). Response contains structured outputs ready for immediate analysis - avoid reprocessing them via remote bash/workbench tools.\n\nPrerequisites:\n- Always use valid tool slugs and their arguments discovered through COMPOSIO_SEARCH_TOOLS. NEVER invent tool slugs or argument fields. ALWAYS pass STRICTLY schema-compliant arguments with each tool execution.\n- Ensure an ACTIVE connection exists for the toolkits that are going to be executed. If none exists, MUST initiate one via COMPOSIO_MANAGE_CONNECTIONS before execution.\n- Only batch tools that are logically independent - no ordering, no output-to-input dependencies, and no intra-call chaining (tools in one call can't use each other's outputs). DO NOT pass dummy or placeholder inputs; always resolve required inputs using appropriate tools first.\n\nUsage guidelines:\n- Use this whenever a tool is discovered and has to be called, either as part of a multi-step workflow or as a standalone tool.\n- If COMPOSIO_SEARCH_TOOLS returns a tool that can perform the task, prefer calling it via this executor. Do not write custom API calls or ad-hoc scripts for tasks that can be completed by available Composio tools.\n- Prefer parallel execution: group independent tools into a single multi-execute call where possible.\n- Predictively set sync_response_to_workbench=true if the response may be large or needed for later scripting. It still shows response inline; if the actual response data turns out small and easy to handle, keep everything inline and SKIP workbench usage.\n- Responses contain structured outputs for each tool. RULE: Small data - process yourself inline; large data - process in the workbench.\n- ALWAYS include inline references/links to sources in MARKDOWN format directly next to the relevant text. Eg provide slack thread links alongside with summary, render document links instead of raw IDs.\n\nRestrictions: Some tools or toolkits may be disabled in this environment. If the response indicates a restriction, inform the user and STOP execution immediately. Do NOT attempt workarounds or speculative actions.\n\n\n- CRITICAL: You MUST always include the 'memory' parameter - never omit it. Even if you think there's nothing to remember, include an empty object {} for memory.\n\nMemory Storage:\n- CRITICAL FORMAT: Memory must be a dictionary where keys are app names (strings) and values are arrays of strings. NEVER pass nested objects or dictionaries as values.\n- CORRECT format: {\"slack\": [\"Channel general has ID C1234567\"], \"gmail\": [\"John's email is john@example.com\"]}\n- Write memory entries in natural, descriptive language - NOT as key-value pairs. Use full sentences that clearly describe the relationship or information.\n- ONLY store information that will be valuable for future tool executions - focus on persistent data that saves API calls.\n- STORE: ID mappings, entity relationships, configs, stable identifiers.\n- DO NOT STORE: Action descriptions, temporary status updates, logs, or \"sent/fetched\" confirmations.\n- Examples of GOOD memory (store these):\n  * \"The important channel in Slack has ID C1234567 and is called #general\"\n  * \"The team's main repository is owned by user 'teamlead' with ID 98765\"\n  * \"The user prefers markdown docs with professional writing, no emojis\" (user_preference)\n- Examples of BAD memory (DON'T store these):\n  * \"Successfully sent email to john@example.com with message hi\"\n  * \"Fetching emails from last day (Sep 6, 2025) for analysis\"\n- Do not repeat the memories stored or found previously.\n"
+        "description": "\n  Fast and parallel tool executor for tools and recipes discovered through COMPOSIO_SEARCH_TOOLS. Use this tool to execute up to 50 tools in parallel across apps only when they're logically independent (no ordering/output dependencies). Response contains structured outputs ready for immediate analysis - avoid reprocessing them via remote bash/workbench tools.\n\nPrerequisites:\n- Always use valid tool slugs and their arguments. NEVER invent tool slugs or argument fields. ALWAYS pass STRICTLY schema-compliant arguments with each tool execution.\n- Ensure an ACTIVE connection exists for the toolkits that are going to be executed. If none exists, MUST initiate one via COMPOSIO_MANAGE_CONNECTIONS before execution.\n- Only batch tools that are logically independent - no ordering, no output-to-input dependencies, and no intra-call chaining (tools in one call can't use each other's outputs). DO NOT pass dummy or placeholder inputs; always resolve required inputs using appropriate tools first.\n\nUsage guidelines:\n- Use this whenever a tool is discovered and has to be called, either as part of a multi-step workflow or as a standalone tool.\n- If COMPOSIO_SEARCH_TOOLS returns a tool that can perform the task, prefer calling it via this executor. Do not write custom API calls or ad-hoc scripts for tasks that can be completed by available Composio tools.\n- Prefer parallel execution: group independent tools into a single multi-execute call where possible.\n- Predictively set sync_response_to_workbench=true if the response may be large or needed for later scripting. It still shows response inline; if the actual response data turns out small and easy to handle, keep everything inline and SKIP workbench usage.\n- Responses contain structured outputs for each tool. RULE: Small data - process yourself inline; large data - process in the workbench.\n- ALWAYS include inline references/links to sources in MARKDOWN format directly next to the relevant text. Eg provide slack thread links alongside with summary, render document links instead of raw IDs.\n\nRestrictions: Some tools or toolkits may be disabled in this environment. If the response indicates a restriction, inform the user and STOP execution immediately. Do NOT attempt workarounds or speculative actions.\n\n\n- CRITICAL: You MUST always include the 'memory' parameter - never omit it. Even if you think there's nothing to remember, include an empty object {} for memory.\n\nMemory Storage:\n- CRITICAL FORMAT: Memory must be a dictionary where keys are app names (strings) and values are arrays of strings. NEVER pass nested objects or dictionaries as values.\n- CORRECT format: {\"slack\": [\"Channel general has ID C1234567\"], \"gmail\": [\"John's email is john@example.com\"]}\n- Write memory entries in natural, descriptive language - NOT as key-value pairs. Use full sentences that clearly describe the relationship or information.\n- ONLY store information that will be valuable for future tool executions - focus on persistent data that saves API calls.\n- STORE: ID mappings, entity relationships, configs, stable identifiers.\n- DO NOT STORE: Action descriptions, temporary status updates, logs, or \"sent/fetched\" confirmations.\n- Examples of GOOD memory (store these):\n  * \"The important channel in Slack has ID C1234567 and is called #general\"\n  * \"The team's main repository is owned by user 'teamlead' with ID 98765\"\n  * \"The user prefers markdown docs with professional writing, no emojis\" (user_preference)\n- Examples of BAD memory (DON'T store these):\n  * \"Successfully sent email to john@example.com with message hi\"\n  * \"Fetching emails from last day (Sep 6, 2025) for analysis\"\n- Do not repeat the memories stored or found previously.\n"
       },
       {
         "slug": "COMPOSIO_REMOTE_BASH_TOOL",
@@ -485,7 +485,7 @@
       {
         "slug": "COMPOSIO_SEARCH_TOOLS",
         "name": "Search Composio Tools",
-        "description": "\n  MCP Server Info: COMPOSIO MCP connects 500+ apps—Slack, GitHub, Notion, Google Workspace (Gmail, Sheets, Drive, Calendar), Microsoft (Outlook, Teams), X/Twitter, Figma, Web Search / Deep research, Browser tool (scrape URLs, browser automation), Meta apps (Instagram, Meta Ads), TikTok, AI tools like Nano Banana & Veo3, and more—for seamless cross-app automation.\n  Use this MCP server to discover the right tools and the recommended step-by-step plan to execute reliably.\n  ALWAYS call this tool first whenever a user mentions or implies an external app, service, or workflow—never say \"I don't have access to X/Y app\" before calling it.\n\n  Tool Info: Extremely fast discovery tool that returns relevant MCP-callable tools along with a recommended execution plan and common pitfalls for reliable execution.\n\nUsage guidelines:\n  - Use this tool whenever kicking off a task. Re-run it when you need additional tools/plans due to missing details, errors, or a changed use case.\n  - If the user pivots to a different use case in same chat, you MUST call this tool again with the new use case and generate a new session_id.\n  - Specify the use_case with a normalized description of the problem, query, or task. Be clear and precise. Queries can be simple single-app actions or multiple linked queries for complex cross-app workflows.\n  - Pass known_fields along with use_case as a string of key–value hints (for example, \"channel_name: general\") to help the search resolve missing details such as IDs.\n  \n\nSplitting guidelines (Important):\n  1. Atomic queries: 1 query = 1 tool call. Include hidden prerequisites (e.g., add \"get Linear issue\" before \"update Linear issue\").\n  2. Include app names: If user names a toolkit, include it in every sub query so intent stays scoped (e.g., \"fetch Gmail emails\", \"reply to Gmail email\").\n  3. English input: Translate non-English prompts while preserving intent and identifiers.\n\n  Example:\n  User query: \"send an email to John welcoming him and create a meeting invite for tomorrow\"\n  Search call: queries: [\n    {use_case: \"send an email to someone\", known_fields: \"recipient_name: John\"},\n    {use_case: \"create a meeting invite\", known_fields: \"meeting_date: tomorrow\"}\n  ]\n\nPlan review checklist (Important):\n  - The response includes a detailed execution plan and common pitfalls. You MUST review this plan carefully, adapt it to your current context, and generate your own final step-by-step plan before execution. Execute the steps in order to ensure reliable and accurate execution. Skipping or ignoring required steps can lead to unexpected failures.\n  - Check the plan and pitfalls for input parameter nuances (required fields, IDs, formats, limits). Before executing any tool, you MUST review its COMPLETE input schema and provide STRICTLY schema-compliant arguments to avoid invalid-input errors.\n  - Determine whether pagination is needed; if a response returns a pagination token and completeness is implied, paginate until exhaustion and do not return partial results.\n\nResponse:\n  - Tools & Input Schemas: The response lists toolkits (apps) and tools suitable for the task, along with their tool_slug, description, input schema / schemaRef, and related tools for prerequisites, alternatives, or next steps.\n    - NOTE: Tools with schemaRef instead of input_schema require you to call COMPOSIO_GET_TOOL_SCHEMAS first to load their full input_schema before use.\n  - Connection Info: If a toolkit has an active connection, the response includes it along with any available current user information. If no active connection exists, you MUST initiate a new connection via COMPOSIO_MANAGE_CONNECTIONS with the correct toolkit name. DO NOT execute any toolkit tool without an ACTIVE connection.\n  - Time Info: The response includes the current UTC time for reference. You can reference UTC time from the response if needed.\n  - The tools returned to you through this are to be called via COMPOSIO_MULTI_EXECUTE_TOOL. Ensure each tool execution specifies the correct tool_slug and arguments exactly as defined by the tool's input schema.\n    - The response includes a memory parameter containing relevant information about the use case and the known fields that can be used to determine the flow of execution. Any user preferences in memory must be adhered to.\n\nSESSION: ALWAYS set this parameter, first for any workflow. Pass session: {generate_id: true} for new workflows OR session: {id: \"EXISTING_ID\"} to continue. ALWAYS use the returned session_id in ALL subsequent meta tool calls.\n    "
+        "description": "\n  Tool Server Info: Composio connects 500+ apps—Slack, GitHub, Notion, Google Workspace (Gmail, Sheets, Drive, Calendar), Microsoft (Outlook, Teams), X/Twitter, Figma, Web Search / Deep research, Browser tool (scrape URLs, browser automation), Meta apps (Instagram, Meta Ads), TikTok, AI tools like Nano Banana & Veo3, and more—for seamless cross-app automation.\n  Use this tool to discover the right tools and the recommended step-by-step plan to execute reliably.\n  Always call this tool first whenever a user mentions or implies an external app, service, or workflow—never say \"I don't have access to X/Y app\" before calling it.\n\n  Tool Info: Extremely fast discovery tool that returns relevant tools along with a recommended execution plan and common pitfalls for reliable execution.\n\nUsage guidelines:\n  - Use this tool whenever kicking off a task. Re-run it when you need additional tools/plans due to missing details, errors, or a changed use case.\n  - If the user pivots to a different use case in same chat, you MUST call this tool again with the new use case and generate a new session_id.\n  - Specify the use_case with a normalized description of the problem, query, or task. Be clear and precise. Queries can be simple single-app actions or multiple linked queries for complex cross-app workflows.\n  - Pass known_fields along with use_case as a string of key–value hints (for example, \"channel_name: general\") to help the search resolve missing details such as IDs.\n  \n\nSplitting guidelines (Important):\n  1. Atomic queries: 1 query = 1 tool call. Include hidden prerequisites (e.g., add \"get Linear issue\" before \"update Linear issue\").\n  2. Include app names: If user names a toolkit, include it in every sub query so intent stays scoped (e.g., \"fetch Gmail emails\", \"reply to Gmail email\").\n  3. English input: Translate non-English prompts while preserving intent and identifiers.\n\n  Example:\n  User query: \"send an email to John welcoming him and create a meeting invite for tomorrow\"\n  Search call: queries: [\n    {use_case: \"send an email to someone\", known_fields: \"recipient_name: John\"},\n    {use_case: \"create a meeting invite\", known_fields: \"meeting_date: tomorrow\"}\n  ]\n\nPlan review checklist (Important):\n  - The response includes a detailed execution plan and common pitfalls. You MUST review this plan carefully, adapt it to your current context, and generate your own final step-by-step plan before execution. Execute the steps in order to ensure reliable and accurate execution. Skipping or ignoring required steps can lead to unexpected failures.\n  - Check the plan and pitfalls for input parameter nuances (required fields, IDs, formats, limits). Before executing any tool, you MUST review its COMPLETE input schema and provide STRICTLY schema-compliant arguments to avoid invalid-input errors.\n  - Determine whether pagination is needed; if a response returns a pagination token and completeness is implied, paginate until exhaustion and do not return partial results.\n\nResponse:\n  - Tools & Input Schemas: The response lists toolkits (apps) and tools suitable for the task, along with their tool_slug, description, input schema / schemaRef, and related tools for prerequisites, alternatives, or next steps.\n    - NOTE: Tools with schemaRef instead of input_schema require you to call COMPOSIO_GET_TOOL_SCHEMAS first to load their full input_schema before use.\n  - Connection Info: If a toolkit has an active connection, the response includes it along with any available current user information. If no active connection exists, you MUST initiate a new connection via COMPOSIO_MANAGE_CONNECTIONS with the correct toolkit name. DO NOT execute any toolkit tool without an ACTIVE connection.\n  - Time Info: The response includes the current UTC time for reference. You can reference UTC time from the response if needed.\n  - The tools returned to you through this are to be called via COMPOSIO_MULTI_EXECUTE_TOOL. Ensure each tool execution specifies the correct tool_slug and arguments exactly as defined by the tool's input schema.\n    - The response includes a memory parameter containing relevant information about the use case and the known fields that can be used to determine the flow of execution. Any user preferences in memory must be adhered to.\n\nSESSION: ALWAYS set this parameter, first for any workflow. Pass session: {generate_id: true} for new workflows OR session: {id: \"EXISTING_ID\"} to continue. ALWAYS use the returned session_id in ALL subsequent meta tool calls.\n    "
       },
       {
         "slug": "COMPOSIO_WAIT_FOR_CONNECTION",
@@ -560,7 +560,7 @@
     ],
     "toolCount": 867,
     "triggerCount": 20,
-    "version": "20260415_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GITHUB_ABORT_REPOSITORY_MIGRATION",
@@ -5063,9 +5063,9 @@
     "composioManagedAuthSchemes": [
       "OAUTH2"
     ],
-    "toolCount": 46,
+    "toolCount": 48,
     "triggerCount": 7,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLECALENDAR_ACL_DELETE",
@@ -5243,6 +5243,16 @@
         "description": "Gets the current date and time, allowing for a specific timezone offset. Call this tool first before computing relative dates (e.g., 'tomorrow', 'next Monday') to avoid off-by-one-day errors across timezones."
       },
       {
+        "slug": "GOOGLECALENDAR_LIST_BUILDINGS",
+        "name": "List Buildings",
+        "description": "Lists all buildings for a Google Workspace customer account with full details including addresses, coordinates, and floor names. Use this action when you need to retrieve the complete list of physical building locations configured in Google Workspace Calendar resources. This is useful for workspace administrators managing conference room and resource scheduling across multiple office buildings. Requires Google Workspace administrator privileges with Directory API access."
+      },
+      {
+        "slug": "GOOGLECALENDAR_LIST_CALENDAR_RESOURCES",
+        "name": "List Calendar Resources",
+        "description": "Retrieves calendar resources (such as conference rooms) from a Google Workspace domain using the Admin SDK Directory API. Use this action when you need to list available meeting rooms, conference spaces, or other bookable calendar resources in an organization. The action supports filtering by resource category, capacity, building location, and other criteria. IMPORTANT: This requires Admin SDK Directory API access and appropriate admin permissions - it is NOT available for personal Gmail accounts, only Google Workspace domains."
+      },
+      {
         "slug": "GOOGLECALENDAR_LIST_CALENDARS",
         "name": "List Google Calendars",
         "description": "Retrieves calendars from the user's Google Calendar list, with options for pagination and filtering. Loop through all pages using nextPageToken until absent to avoid missing calendars. Use the primary flag and accessRole field from the response to identify calendars — display names are not valid calendar_id values. Read access (listing) does not imply write OAuth scopes."
@@ -5312,7 +5322,7 @@
       {
         "slug": "GOOGLECALENDAR_EVENT_STARTING_SOON_TRIGGER",
         "name": "Event Starting Soon",
-        "description": "Triggers when a calendar event is within a configured number of minutes from starting.\n    Includes countdown window, start time, and event metadata."
+        "description": "Triggers when a calendar event is within a configured number of minutes from starting.\n    Returns event details, time remaining, attendees, and join links when available."
       },
       {
         "slug": "GOOGLECALENDAR_GOOGLE_CALENDAR_EVENT_CHANGE_TRIGGER",
@@ -5401,7 +5411,7 @@
     ],
     "toolCount": 48,
     "triggerCount": 5,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NOTION_ADD_MULTIPLE_PAGE_CONTENT",
@@ -5759,7 +5769,7 @@
     ],
     "toolCount": 48,
     "triggerCount": 16,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLESHEETS_ADD_SHEET",
@@ -6148,8 +6158,8 @@
       "OAUTH2"
     ],
     "toolCount": 151,
-    "triggerCount": 5,
-    "version": "20260417_00",
+    "triggerCount": 8,
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SLACK_ADD_CALL_PARTICIPANTS",
@@ -6204,7 +6214,7 @@
       {
         "slug": "SLACK_ASSISTANT_SEARCH_CONTEXT",
         "name": "Real-time search",
-        "description": "Search across Slack messages, files, channels, and users using Real-time Search API. BEFORE USING: Call SLACK_ASSISTANT_SEARCH_INFO to check workspace capabilities. - If is_ai_search_enabled=true → Use natural language queries (semantic search) - If is_ai_search_enabled=false → Pass disable_semantic_search=true (keyword search) - If SLACK_ASSISTANT_SEARCH_INFO fails or is unavailable → Default to disable_semantic_search=true (safe keyword fallback) Works on ALL Slack workspace tiers: - Free/Pro/Business: keyword search only - Business+/Enterprise with Slack AI: semantic search available Supports filtering by channel type, date range, and content type. Use `content_types` to search messages, files, channels, or users in a single call. Enable `include_context_messages` for surrounding conversation context. If you get a missing_scope error, the user needs to reconnect their Slack account."
+        "description": "Search across Slack messages, files, channels, and users using Real-time Search API."
       },
       {
         "slug": "SLACK_ASSISTANT_SEARCH_INFO",
@@ -6363,8 +6373,8 @@
       },
       {
         "slug": "SLACK_FIND_USER_BY_EMAIL_ADDRESS",
-        "name": "Lookup users by email (Deprecated)",
-        "description": "DEPRECATED: Use FindUsers instead. Retrieves the Slack user object for an active user by their registered email address; requires the users:read.email OAuth scope. Fails with 'users_not_found' if the email is unregistered, the user is inactive, the account is a guest, or the email is hidden by workspace privacy settings."
+        "name": "Lookup users by email",
+        "description": "Retrieves the Slack user object for an active user by their registered email address; requires the users:read.email OAuth scope. Fails with 'users_not_found' if the email is unregistered, the user is inactive, the account is a guest, or the email is hidden by workspace privacy settings."
       },
       {
         "slug": "SLACK_FIND_USERS",
@@ -6914,24 +6924,39 @@
         "description": "Triggered when a new channel is created in Slack."
       },
       {
+        "slug": "SLACK_CHANNEL_MESSAGE_RECEIVED",
+        "name": "Channel Message Received",
+        "description": "Triggered when a message is posted in a Slack channel\n    (public, private, or multi-party IM). Does NOT match direct messages."
+      },
+      {
+        "slug": "SLACK_DIRECT_MESSAGE_RECEIVED",
+        "name": "Direct Message Received",
+        "description": "Triggered when a new direct message (DM) is sent to a user in Slack.\n    Catches all DMs across all DM channels."
+      },
+      {
+        "slug": "SLACK_MESSAGE_REACTION_ADDED",
+        "name": "Message Reaction Added",
+        "description": "Triggered when a reaction is added to a message in Slack.\n    Supports optional filtering by channel and emoji name."
+      },
+      {
         "slug": "SLACK_REACTION_ADDED",
         "name": "Reaction Added Trigger",
-        "description": "Triggered when a reaction is added to a message in Slack."
+        "description": "DEPRECATED: use `SLACK_MESSAGE_REACTION_ADDED` instead.\n\n    Triggered when a reaction is added to a message in Slack."
       },
       {
         "slug": "SLACK_REACTION_REMOVED",
         "name": "Reaction Removed Trigger",
-        "description": "Triggered when a reaction is removed from a message."
+        "description": "DEPRECATED.\n\n    Triggered when a reaction is removed from a message."
       },
       {
         "slug": "SLACK_RECEIVE_BOT_MESSAGE",
         "name": "New Bot Message Received Trigger",
-        "description": "Triggered when a new bot message is posted to a Slack channel."
+        "description": "DEPRECATED: use `SLACK_CHANNEL_MESSAGE_RECEIVED` with\n    `is_bot_message=true` instead.\n\n    Triggered when a new bot message is posted to a Slack channel."
       },
       {
         "slug": "SLACK_RECEIVE_MESSAGE",
         "name": "New Message Received Trigger",
-        "description": "Triggered when a new message is posted to a Slack channel."
+        "description": "DEPRECATED: use `SLACK_CHANNEL_MESSAGE_RECEIVED` instead.\n\n    Triggered when a new message is posted to a Slack channel."
       }
     ],
     "authConfigDetails": [
@@ -6973,7 +6998,7 @@
                 "type": "string",
                 "description": "Scopes to request from the user, comma separated",
                 "required": false,
-                "default": "calls:read,calls:write,channels:history,channels:read,channels:write,chat:write,dnd:read,dnd:write,emoji:read,files:read,files:write,groups:history,groups:read,groups:write,im:history,im:read,im:write,links:read,links:write,mpim:history,mpim:read,mpim:write,pins:read,pins:write,reactions:read,reactions:write,reminders:read,reminders:write,remote_files:read,remote_files:share,search:read,search:read.files,search:read.im,search:read.mpim,search:read.private,search:read.public,search:read.users,stars:read,stars:write,team:read,usergroups:read,usergroups:write,users.profile:read,users.profile:write,users:read,users:read.email,users:write"
+                "default": "calls:read,calls:write,channels:history,channels:read,channels:write,chat:write,dnd:read,dnd:write,emoji:read,files:read,files:write,groups:history,groups:read,groups:write,im:history,im:read,im:write,links:read,links:write,mpim:history,mpim:read,mpim:write,pins:read,pins:write,reactions:read,reactions:write,reminders:read,reminders:write,remote_files:read,remote_files:share,search:read,search:read.files,search:read.im,search:read.mpim,search:read.private,search:read.public,search:read.users,team:read,usergroups:read,usergroups:write,users.profile:read,users.profile:write,users:read,users:read.email,users:write"
               },
               {
                 "name": "verification_token",
@@ -7008,7 +7033,7 @@
     ],
     "toolCount": 121,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SUPABASE_ALPHA_CREATE_API_KEY",
@@ -7723,7 +7748,7 @@
     ],
     "toolCount": 301,
     "triggerCount": 5,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "OUTLOOK_ACCEPT_EVENT",
@@ -9357,19 +9382,24 @@
     "authSchemes": [
       "API_KEY"
     ],
-    "toolCount": 6,
+    "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260413_01",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "PERPLEXITYAI_CREATE_ASYNC_CHAT_COMPLETION",
         "name": "Create Async Chat Completion",
-        "description": "Create an async chat completion request. Same as /chat/completions but designed for long-running tasks like sonar-deep-research. Returns immediately with a request_id that can be used to poll for results. Async jobs have a 7-day TTL. Use this action when you need to run resource-intensive queries that take longer than typical synchronous requests. The response includes a request ID that can be used to retrieve results later."
+        "description": "Create Async Chat Completion (POST /v1/async/sonar). Submits an asynchronous chat completion request for long-running tasks. Returns immediately with a request ID that can be polled using the Get Async Chat Completion action. Only the 'sonar-deep-research' model is supported for async processing. Async jobs have a 7-day TTL. Deep research generates very long responses (10K-100K+ words) with exhaustive multi-source analysis. Use the idempotency_key to prevent duplicate submissions. Poll with Get Async Chat Completion using the returned request ID to retrieve results when status is COMPLETED."
       },
       {
         "slug": "PERPLEXITYAI_CREATE_CHAT_COMPLETION",
         "name": "Create Chat Completion",
-        "description": "Perplexity AI Chat Completions endpoint using Sonar models. Provides web-grounded conversational AI responses with optional citations. The model searches the web to provide accurate, up-to-date answers with sources. Supports various models optimized for different use cases: - sonar: Fast, cost-effective for simple queries - sonar-pro: Enhanced quality for complex questions - sonar-reasoning-pro: Advanced reasoning capabilities Features include: - Web search grounding for accurate, current information - Citations showing sources for claims - Streaming responses for real-time interaction - Configurable temperature, top_p, and other generation parameters Note: presence_penalty and frequency_penalty cannot be used simultaneously."
+        "description": "Perplexity Sonar Chat Completions (POST /v1/sonar). Generates web-grounded conversational AI responses with citations. Supports multiple Sonar models optimized for different use cases: - sonar: Fast, cost-effective for simple queries - sonar-pro: Enhanced quality for complex questions - sonar-reasoning-pro: Chain-of-thought reasoning with <think> blocks - sonar-deep-research: Exhaustive multi-source research (generates very long responses, 10K+ words; prefer the async endpoint for this model) Features: web search grounding, citations, images, structured JSON output, search filtering by domain/date/language/recency, and streaming. Important constraints: - search_recency_filter and date filters (search_after_date_filter, search_before_date_filter, etc.) are mutually exclusive. Use one or the other, not both. - Messages with the 'tool' role must alternate with 'assistant' messages. A valid pattern is: system -> user -> assistant -> tool -> user. - The 'stop' parameter is not currently supported by the API."
+      },
+      {
+        "slug": "PERPLEXITYAI_CREATE_CONTEXTUALIZED_EMBEDDINGS",
+        "name": "Create Contextualized Embeddings",
+        "description": "Create Contextualized Embeddings (POST /v1/contextualizedembeddings). Generates document-aware embeddings where chunks from the same document share context. Unlike standard embeddings, these recognize sequential relationships within documents, improving retrieval quality. Models: pplx-embed-context-v1-0.6b (1024 dims) and pplx-embed-context-v1-4b (2560 dims). Both support Matryoshka dimension reduction and INT8/binary quantization."
       },
       {
         "slug": "PERPLEXITYAI_CREATE_EMBEDDINGS",
@@ -9379,17 +9409,27 @@
       {
         "slug": "PERPLEXITYAI_EXECUTE_AGENT",
         "name": "Execute Agent",
-        "description": "Agent API - Orchestrates multi-step agentic workflows with built-in tools (web search, URL fetching), reasoning, and multi-model support. Use this action when you need to run complex queries that benefit from automatic web search, URL fetching, and multi-step reasoning. The agent can automatically decide when to use tools and how to synthesize responses. Supports various models including OpenAI models (e.g., gpt-5.2) and Perplexity's sonar models. Configure tools like web_search to enable automatic information gathering."
+        "description": "Create Agent Response (POST /v1/agent). Orchestrates multi-step agentic workflows with built-in tools (web search, URL fetching, function calling), reasoning, and multi-model support. Streaming is not supported by this action. At least one of 'model', 'models', or 'preset' must be provided. Available presets: 'fast-search', 'pro-search', 'deep-research'. The 'deep-research' preset generates very long responses (10K-100K+ words) with exhaustive multi-source analysis. Available models include Perplexity Sonar, OpenAI, Anthropic, Google, xAI, and NVIDIA models at direct provider rates. Use the List Models action to see available model identifiers."
       },
       {
-        "slug": "PERPLEXITYAI_PERPLEXITY_AI_SEARCH",
-        "name": "PerplexityAISearch",
-        "description": "Perplexity Ai Search interfaces with Perplexity AI to perform search queries and return responses from a range of models. This action manages requests to Perplexity AI and processes the resulting completions, which may include text, citations, and images based on selected models and settings. Key features include: Autoprompting to enhance and refine queries, choice of AI models for various content and performance requirements, temperature settings to manage response randomness, Top K and Top P filters to fine-tune response generation. Beta features include citations and images in results, and response streaming for dynamic interaction. Note: The parameters 'presence_penalty' and 'frequency_penalty' are mutually exclusive and cannot be used simultaneously."
+        "slug": "PERPLEXITYAI_GET_ASYNC_CHAT_COMPLETION",
+        "name": "Get Async Chat Completion",
+        "description": "Get Async Chat Completion (GET /v1/async/sonar/{id}). Retrieves the result of an asynchronous chat completion request by its ID. Use this to poll for the result after creating an async job. The response includes the status and, when completed, the full completion."
+      },
+      {
+        "slug": "PERPLEXITYAI_LIST_ASYNC_CHAT_COMPLETIONS",
+        "name": "List Async Chat Completions",
+        "description": "List Async Chat Completions (GET /v1/async/sonar). Retrieves a list of all asynchronous chat completion requests for the authenticated user. Use this to see the status of all your pending, completed, and failed async jobs."
+      },
+      {
+        "slug": "PERPLEXITYAI_LIST_MODELS",
+        "name": "List Models",
+        "description": "List Models (GET /v1/models). Lists models available for the Agent API. Returns model identifiers that can be used with the Agent endpoint. The response follows the OpenAI List Models format for compatibility. This is a public endpoint that does not require authentication."
       },
       {
         "slug": "PERPLEXITYAI_SEARCH",
         "name": "Perplexity Search (Raw Results)",
-        "description": "Search API (Raw Results, No LLM) - Returns ranked web results directly from Perplexity's index without LLM processing. Faster and cheaper when you don't need a generated answer. Use this action when you need raw web search results without AI-generated summaries. Supports advanced filtering by date, domain, language, and geographic location."
+        "description": "Search the Web (POST /search). Returns raw, ranked web search results directly from Perplexity's index without LLM processing. Faster and cheaper than chat completions when you need raw results. Supports filtering by domain, date, language, country, and recency. Max 20 results per request. Important: search_recency_filter and date filters (search_after_date_filter, search_before_date_filter, last_updated_after_filter, last_updated_before_filter) are mutually exclusive. Use one or the other, not both."
       }
     ],
     "triggers": [],
@@ -9430,7 +9470,7 @@
     ],
     "toolCount": 79,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_02",
     "tools": [
       {
         "slug": "TWITTER_ADD_LIST_MEMBER",
@@ -9856,7 +9896,7 @@
                 "name": "generic_id",
                 "displayName": "Application Bearer Token",
                 "type": "string",
-                "description": "Your Twitter application bearer token for authentication. Needed for TWITTER_FULL_ARCHIVE_SEARCH, TWITTER_CREATE_COMPLIANCE_JOB_REQUEST, TWITTER_RETRIEVE_COMPLIANCE_JOBS, TWITTER_RETRIEVE_COMPLIANCE_JOB_BY_ID actions.",
+                "description": "Bearer Token from your X Developer App (same App as the OAuth Client ID/Secret). Required for app-only actions: TWITTER_RECENT_SEARCH, TWITTER_RECENT_SEARCH_COUNTS, TWITTER_FULL_ARCHIVE_SEARCH, TWITTER_FULL_ARCHIVE_SEARCH_COUNTS, TWITTER_POST_LOOKUP_BY_POST_IDS, TWITTER_POST_USAGE, TWITTER_POSTS_LABEL_STREAM, TWITTER_CREATE_COMPLIANCE_JOB_REQUEST, TWITTER_RETRIEVE_COMPLIANCE_JOBS, TWITTER_RETRIEVE_COMPLIANCE_JOB_BY_ID.",
                 "required": true,
                 "default": null
               }
@@ -9902,7 +9942,7 @@
     ],
     "toolCount": 89,
     "triggerCount": 7,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLEDRIVE_ADD_FILE_SHARING_PREFERENCE",
@@ -10452,7 +10492,7 @@
     ],
     "toolCount": 35,
     "triggerCount": 10,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLEDOCS_COPY_DOCUMENT",
@@ -10748,7 +10788,7 @@
     ],
     "toolCount": 233,
     "triggerCount": 2,
-    "version": "20260417_01",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HUBSPOT_ADD_ASSET_ASSOCIATION",
@@ -12025,7 +12065,7 @@
     ],
     "toolCount": 33,
     "triggerCount": 3,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LINEAR_CREATE_ATTACHMENT",
@@ -12299,7 +12339,7 @@
     ],
     "toolCount": 25,
     "triggerCount": 6,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "AIRTABLE_CREATE_BASE",
@@ -12601,7 +12641,7 @@
     ],
     "toolCount": 48,
     "triggerCount": 0,
-    "version": "20260413_01",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "SERPAPI_BAIDU_SEARCH",
@@ -12887,7 +12927,7 @@
     ],
     "toolCount": 97,
     "triggerCount": 3,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "JIRA_ADD_ATTACHMENT",
@@ -13819,7 +13859,7 @@
     ],
     "toolCount": 50,
     "triggerCount": 4,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "YOUTUBE_ADD_VIDEO_TO_PLAYLIST",
@@ -14158,8 +14198,8 @@
       "OAUTH2"
     ],
     "toolCount": 89,
-    "triggerCount": 5,
-    "version": "20260417_00",
+    "triggerCount": 8,
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SLACKBOT_ADD_CALL_PARTICIPANTS",
@@ -14298,8 +14338,8 @@
       },
       {
         "slug": "SLACKBOT_FIND_USER_BY_EMAIL_ADDRESS",
-        "name": "Lookup users by email (Deprecated)",
-        "description": "DEPRECATED: Use FindUsers instead. Retrieves the Slack user object for an active user by their registered email address; requires the users:read.email OAuth scope. Fails with 'users_not_found' if the email is unregistered, the user is inactive, the account is a guest, or the email is hidden by workspace privacy settings."
+        "name": "Lookup users by email",
+        "description": "Retrieves the Slack user object for an active user by their registered email address; requires the users:read.email OAuth scope. Fails with 'users_not_found' if the email is unregistered, the user is inactive, the account is a guest, or the email is hidden by workspace privacy settings."
       },
       {
         "slug": "SLACKBOT_FIND_USERS",
@@ -14614,24 +14654,39 @@
         "description": "Triggered when a new channel is created in Slack."
       },
       {
+        "slug": "SLACKBOT_CHANNEL_MESSAGE_RECEIVED",
+        "name": "Channel Message Received",
+        "description": "Triggered when a message is posted in a Slack channel\n    (public, private, or multi-party IM). Does NOT match direct messages."
+      },
+      {
+        "slug": "SLACKBOT_DIRECT_MESSAGE_RECEIVED",
+        "name": "Direct Message Received",
+        "description": "Triggered when a new direct message (DM) is sent to a user in Slack.\n    Catches all DMs across all DM channels."
+      },
+      {
+        "slug": "SLACKBOT_MESSAGE_REACTION_ADDED",
+        "name": "Message Reaction Added",
+        "description": "Triggered when a reaction is added to a message in Slack.\n    Supports optional filtering by channel and emoji name."
+      },
+      {
         "slug": "SLACKBOT_REACTION_ADDED",
         "name": "Reaction Added Trigger",
-        "description": "Triggered when a reaction is added to a message in Slack."
+        "description": "DEPRECATED: use `SLACK_MESSAGE_REACTION_ADDED` instead.\n\n    Triggered when a reaction is added to a message in Slack."
       },
       {
         "slug": "SLACKBOT_REACTION_REMOVED",
         "name": "Reaction Removed Trigger",
-        "description": "Triggered when a reaction is removed from a message."
+        "description": "DEPRECATED.\n\n    Triggered when a reaction is removed from a message."
       },
       {
         "slug": "SLACKBOT_RECEIVE_BOT_MESSAGE",
         "name": "New Bot Message Received Trigger",
-        "description": "Triggered when a new bot message is posted to a Slack channel."
+        "description": "DEPRECATED: use `SLACK_CHANNEL_MESSAGE_RECEIVED` with\n    `is_bot_message=true` instead.\n\n    Triggered when a new bot message is posted to a Slack channel."
       },
       {
         "slug": "SLACKBOT_RECEIVE_MESSAGE",
         "name": "New Message Received Trigger",
-        "description": "Triggered when a new message is posted to a Slack channel."
+        "description": "DEPRECATED: use `SLACK_CHANNEL_MESSAGE_RECEIVED` instead.\n\n    Triggered when a new message is posted to a Slack channel."
       }
     ],
     "authConfigDetails": [
@@ -14673,7 +14728,7 @@
                 "type": "string",
                 "description": "Scopes to request from the bot",
                 "required": false,
-                "default": "channels:history,chat:write,chat:write,team:read,channels:read,users:read,reactions:read"
+                "default": "channels:history,chat:write,team:read,channels:read,users:read,reactions:read"
               },
               {
                 "name": "verification_token",
@@ -14703,9 +14758,9 @@
       "OAUTH2",
       "API_KEY"
     ],
-    "toolCount": 560,
+    "toolCount": 574,
     "triggerCount": 6,
-    "version": "20260417_00",
+    "version": "20260422_02",
     "tools": [
       {
         "slug": "CANVAS_ABORT_QUIZ_REPORT_GENERATION",
@@ -16933,6 +16988,76 @@
         "description": "Marks the initial text of a group discussion topic as unread for the current user. Use when you need to flag a group discussion topic as unread to track it for later review."
       },
       {
+        "slug": "CANVAS_NEW_QUIZ_ACCOMMODATIONS_SET",
+        "name": "Set quiz accommodations",
+        "description": "EXPERIMENTAL: Sets quiz-level accommodations (extra time, extra attempts, reduced choices) for one or more students on a New Quiz. Sends a JSON array body; may return a partial success."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_COURSE_ACCOMMODATIONS_SET",
+        "name": "Set course quiz accommodations",
+        "description": "EXPERIMENTAL: Sets course-level accommodations (extra time, apply-to-in-progress, reduced choices) for one or more students. These accommodations apply to all New Quizzes in the course. Sends a JSON array body."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_CREATE",
+        "name": "Create a new quiz",
+        "description": "EXPERIMENTAL: Creates a New Quiz in a Canvas course with the specified title, dates, grading type, instructions, and nested quiz settings (attempts, result view, IP filtering, shuffling, time limit, etc.)."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_DELETE",
+        "name": "Delete a new quiz",
+        "description": "EXPERIMENTAL: Permanently deletes the New Quiz identified by `assignment_id` from the course identified by `course_id`; this action cannot be undone."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_GET",
+        "name": "Get a new quiz",
+        "description": "EXPERIMENTAL: Retrieves a single New Quiz from a Canvas course by its assignment ID. Use when you need to view settings, dates, instructions, or other metadata for a New Quiz."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_ITEM_CREATE",
+        "name": "Create a quiz item",
+        "description": "EXPERIMENTAL: Creates a new QuestionItem in a New Quiz. The `entry` object describes the question body, interaction type, scoring, and feedback."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_ITEM_DELETE",
+        "name": "Delete a quiz item",
+        "description": "EXPERIMENTAL: Permanently deletes a single quiz item (question) from a New Quiz; this action cannot be undone."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_ITEM_GET",
+        "name": "Get a quiz item",
+        "description": "EXPERIMENTAL: Retrieves a single quiz item (question) from a New Quiz. Use to inspect item body, scoring, and interaction data."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_ITEM_LIST",
+        "name": "List quiz items",
+        "description": "EXPERIMENTAL: Lists all items (questions) in a New Quiz. Use to enumerate items with their positions, points, and question data."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_ITEM_MEDIA_UPLOAD_URL",
+        "name": "Get items media upload URL",
+        "description": "EXPERIMENTAL: Retrieves a presigned URL that can be used to upload media (images, audio, etc.) for use in New Quiz items."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_ITEM_UPDATE",
+        "name": "Update a quiz item",
+        "description": "EXPERIMENTAL: Updates an existing quiz item (question) in a New Quiz. All body fields are optional; only supplied fields are modified."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_LIST",
+        "name": "List new quizzes",
+        "description": "EXPERIMENTAL: Lists all New Quizzes in a Canvas course. Use to enumerate New Quizzes along with their settings and metadata."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_REPORT_CREATE",
+        "name": "Create a new quiz report",
+        "description": "EXPERIMENTAL: Creates a report for a New Quiz. Starts an asynchronous job and returns a Progress object the caller can poll. Report type is 'student_analysis' or 'item_analysis'; output format is 'csv' or 'json'."
+      },
+      {
+        "slug": "CANVAS_NEW_QUIZ_UPDATE",
+        "name": "Update a new quiz",
+        "description": "EXPERIMENTAL: Updates an existing New Quiz in a Canvas course. All body fields are optional; only supplied fields are modified."
+      },
+      {
         "slug": "CANVAS_POST_ASSIGNMENT_GRADES_FOR_SECTIONS",
         "name": "Post assignment grades for sections",
         "description": "Tool to post assignment grades for specific sections in Canvas. Use when you need to release grades to students in particular course sections."
@@ -17644,7 +17769,7 @@
     ],
     "toolCount": 107,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "BITBUCKET_APPROVE_PULL_REQUEST",
@@ -18248,7 +18373,7 @@
     ],
     "toolCount": 18,
     "triggerCount": 5,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLETASKS_BATCH_EXECUTE",
@@ -18433,7 +18558,7 @@
     ],
     "toolCount": 16,
     "triggerCount": 1,
-    "version": "20260410_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DISCORD_GET_CURRENT_USER_APPLICATION_ENTITLEMENTS",
@@ -18468,7 +18593,7 @@
       {
         "slug": "DISCORD_GET_MY_GUILD_MEMBER",
         "name": "Get my guild member",
-        "description": "Retrieves the guild member object for the currently authenticated user within a specified guild, provided they are a member of that guild."
+        "description": "Retrieves the guild member object for the currently authenticated user within a specified guild, including roles, nickname, join date, and permissions."
       },
       {
         "slug": "DISCORD_GET_MY_OAUTH2_AUTHORIZATION",
@@ -18477,7 +18602,7 @@
       },
       {
         "slug": "DISCORD_GET_MY_USER",
-        "name": "Get my user",
+        "name": "Get My User",
         "description": "Fetches comprehensive profile information for the currently authenticated Discord user, including email if the 'email' scope is granted."
       },
       {
@@ -18502,12 +18627,12 @@
       },
       {
         "slug": "DISCORD_LIST_MY_CONNECTIONS",
-        "name": "Retrieve user connections",
+        "name": "List My Connections",
         "description": "Retrieves a list of the authenticated user's connected third-party accounts on Discord."
       },
       {
         "slug": "DISCORD_LIST_MY_GUILDS",
-        "name": "List my guilds",
+        "name": "List My Guilds",
         "description": "Lists the current user's guilds, returning partial data for each; primarily used for displaying server lists or verifying memberships."
       },
       {
@@ -18589,7 +18714,7 @@
     ],
     "toolCount": 53,
     "triggerCount": 0,
-    "version": "20260415_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "FIGMA_ADD_A_COMMENT_TO_A_FILE",
@@ -18959,7 +19084,7 @@
     ],
     "toolCount": 23,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "COMPOSIO_SEARCH_AMAZON",
@@ -19109,7 +19234,7 @@
     ],
     "toolCount": 23,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "REDDIT_CREATE_REDDIT_POST",
@@ -19294,7 +19419,7 @@
     ],
     "toolCount": 175,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CAL_ADD_ATTENDEE",
@@ -20278,7 +20403,7 @@
     ],
     "toolCount": 144,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "WRIKE_BULK_MODIFY_GROUPS",
@@ -21206,7 +21331,7 @@
     ],
     "toolCount": 207,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SENTRY_ACCESS_PROJECT_INFORMATION",
@@ -22559,7 +22684,7 @@
     ],
     "toolCount": 155,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ELEVENLABS_ADD_A_PRONUNCIATION_DICTIONARY",
@@ -23379,7 +23504,7 @@
     ],
     "toolCount": 164,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260422_02",
     "tools": [
       {
         "slug": "MICROSOFT_TEAMS_ADD_CHAT_MEMBER",
@@ -24306,8 +24431,8 @@
       "OAUTH2"
     ],
     "toolCount": 153,
-    "triggerCount": 1,
-    "version": "20260414_00",
+    "triggerCount": 6,
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ASANA_ADD_FOLLOWERS_TO_PROJECT",
@@ -25077,9 +25202,34 @@
     ],
     "triggers": [
       {
-        "slug": "ASANA_TASK_TRIGGER",
-        "name": "Task Trigger",
-        "description": "Task Trigger"
+        "slug": "ASANA_TASK_ATTACHMENT_ADDED",
+        "name": "Attachment Added to Task",
+        "description": "Triggers when an attachment is added to a task."
+      },
+      {
+        "slug": "ASANA_TASK_COMMENT_ADDED",
+        "name": "New Comment on Task",
+        "description": "Triggers when a comment is added to a task in a project."
+      },
+      {
+        "slug": "ASANA_TASK_CREATED",
+        "name": "New Task Created",
+        "description": "Triggers when a new task is created in a project."
+      },
+      {
+        "slug": "ASANA_TASK_MOVED_TO_SECTION",
+        "name": "Task Moved to Section",
+        "description": "Triggers when a task is moved to a section in a project."
+      },
+      {
+        "slug": "ASANA_TASK_TAG_ADDED",
+        "name": "Tag Added to Task",
+        "description": "Triggers when a tag is added to a task.\n\n    Note: Asana's event structure is inverted for tag events — the resource\n    is the task and the parent is the tag. So parent.gid gives the tag GID."
+      },
+      {
+        "slug": "ASANA_TASK_UPDATED",
+        "name": "Task Updated",
+        "description": "Triggers when a task is updated in a project."
       }
     ],
     "authConfigDetails": [
@@ -25144,7 +25294,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "PEOPLEDATALABS_CLEAN_COMPANY_DATA",
@@ -25306,7 +25456,7 @@
     ],
     "toolCount": 394,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "SHOPIFY_ACTIVATE_ONE_TIME_CHARGE",
@@ -27385,7 +27535,7 @@
     ],
     "toolCount": 22,
     "triggerCount": 0,
-    "version": "20260415_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LINKEDIN_CREATE_ARTICLE_OR_URL_SHARE",
@@ -27565,7 +27715,7 @@
     ],
     "toolCount": 22,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLE_MAPS_AUTOCOMPLETE",
@@ -27768,7 +27918,7 @@
     ],
     "toolCount": 60,
     "triggerCount": 9,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ONE_DRIVE_CHECKIN_ITEM",
@@ -28219,7 +28369,7 @@
     ],
     "toolCount": 338,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DOCUSIGN_ADD_CONTACTS_TO_CONTACTS_LIST",
@@ -29986,7 +30136,7 @@
     ],
     "toolCount": 165,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DISCORDBOT_ADD_GROUP_DM_USER",
@@ -30897,7 +31047,7 @@
     ],
     "toolCount": 216,
     "triggerCount": 7,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SALESFORCE_ACCOUNT_CREATION_WITH_CONTENT_TYPE_OPTION",
@@ -32074,9 +32224,9 @@
                 "name": "suffix.one",
                 "displayName": "Instance endpoint",
                 "type": "string",
-                "description": "The service endpoint for your Salesforce instance eg /services/data/v61.0, used for API requests.",
+                "description": "The service endpoint for your Salesforce instance eg /services/data/v62.0, used for API requests.",
                 "required": true,
-                "default": "/services/data/v61.0"
+                "default": "/services/data/v62.0"
               }
             ],
             "optional": []
@@ -32122,9 +32272,9 @@
                 "name": "suffix.one",
                 "displayName": "Instance endpoint",
                 "type": "string",
-                "description": "The service endpoint for your Salesforce instance e.g. /services/data/v61.0",
+                "description": "The service endpoint for your Salesforce instance e.g. /services/data/v62.0",
                 "required": true,
-                "default": "/services/data/v61.0"
+                "default": "/services/data/v62.0"
               }
             ],
             "optional": []
@@ -32147,7 +32297,7 @@
     ],
     "toolCount": 55,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CALENDLY_CANCEL_SCHEDULED_EVENT",
@@ -32491,7 +32641,7 @@
     ],
     "toolCount": 329,
     "triggerCount": 5,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TRELLO_ADD_BOARDS",
@@ -34735,7 +34885,7 @@
     ],
     "toolCount": 47,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MEM0_ADD_MEMBER_TO_PROJECT",
@@ -35011,7 +35161,7 @@
     ],
     "toolCount": 110,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "NEON_ACCEPT_PROJECTS_TRANSFER_REQUESTS",
@@ -35602,7 +35752,7 @@
     ],
     "toolCount": 2,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "WEATHERMAP_GEOCODE_LOCATION",
@@ -35644,7 +35794,7 @@
     ],
     "toolCount": 506,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "POSTHOG_ADD_DASHBOARD_COLLABORATORS_WITH_ACCESS_LEVEL",
@@ -38228,7 +38378,7 @@
     ],
     "toolCount": 163,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CLICKUP_ADD_DEPENDENCY",
@@ -39133,7 +39283,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BREVO_CREATE_A_COMPANY",
@@ -39331,7 +39481,7 @@
     ],
     "toolCount": 422,
     "triggerCount": 7,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "STRIPE_ACCEPT_QUOTE",
@@ -41567,7 +41717,7 @@
     ],
     "toolCount": 225,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "KLAVIYO_ADD_PROFILE_TO_LIST",
@@ -42781,7 +42931,7 @@
     ],
     "toolCount": 19,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "BROWSERBASE_TOOL_CONTEXTS_CREATE",
@@ -42920,7 +43070,7 @@
     ],
     "toolCount": 275,
     "triggerCount": 4,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAILCHIMP_ADD_AUTOMATION",
@@ -44394,7 +44544,7 @@
     ],
     "toolCount": 108,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ATTIO_ASSERT_COMPANY",
@@ -45003,7 +45153,7 @@
     ],
     "toolCount": 15,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLEMEET_CREATE_MEET",
@@ -45144,7 +45294,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TEXT_TO_PDF_CONVERT_TEXT_TO_PDF",
@@ -45209,7 +45359,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260420_00",
     "tools": [
       {
         "slug": "ZOHO_CONVERT_ZOHO_LEAD",
@@ -45509,7 +45659,7 @@
     ],
     "toolCount": 177,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DROPBOX_ACTIVATE_TEAM_FOLDER",
@@ -46460,7 +46610,7 @@
     ],
     "toolCount": 142,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SHORTCUT_CREATE_CATEGORY",
@@ -47216,7 +47366,7 @@
     ],
     "toolCount": 62,
     "triggerCount": 20,
-    "version": "20260417_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "CONFLUENCE_ADD_CONTENT_LABEL",
@@ -47782,7 +47932,7 @@
     ],
     "toolCount": 178,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FRESHDESK_ADD_NOTE_TO_TICKET",
@@ -48722,7 +48872,7 @@
     ],
     "toolCount": 153,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BORNEO_ACCESS_SCAN_ITERATION_BY_ID",
@@ -49601,7 +49751,7 @@
     ],
     "toolCount": 50,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MIXPANEL_ADD_UNIQUE_TO_PROFILE_LIST_PROPERTY",
@@ -49909,7 +50059,7 @@
     ],
     "toolCount": 110,
     "triggerCount": 4,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CODA_ADD_A_CATEGORY_FOR_PACK",
@@ -50521,7 +50671,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ACCULYNX_ADD_JOB_APPOINTMENT",
@@ -50602,7 +50752,7 @@
     ],
     "toolCount": 40,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "AHREFS_BACKLINKS_STATS_RETRIEVAL",
@@ -50843,7 +50993,7 @@
     ],
     "toolCount": 20,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "AFFINITY_GET_A_COMPANY_S_LIST_ENTRIES",
@@ -50984,7 +51134,7 @@
     ],
     "toolCount": 54,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "AMPLITUDE_ASSIGN_ANNOTATIONS_TO_CATEGORY",
@@ -51311,7 +51461,7 @@
     ],
     "toolCount": 71,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "HEYGEN_ADD_LOOKS_TO_PHOTO_AVATAR_GROUP",
@@ -51708,7 +51858,7 @@
     ],
     "toolCount": 99,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "AGENCYZOOM_AUTHENTICATE_FOR_JWTVIA_V4_SSO",
@@ -52279,7 +52429,7 @@
     ],
     "toolCount": 63,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "GOOGLEBIGQUERY_CANCEL_JOB",
@@ -52729,7 +52879,7 @@
     ],
     "toolCount": 28,
     "triggerCount": 0,
-    "version": "20260410_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "COINBASE_GET_ASSET_DETAILS",
@@ -52921,7 +53071,7 @@
     ],
     "toolCount": 125,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MONDAY_ACCOUNT_TRIGGER_STATISTICS",
@@ -53758,7 +53908,7 @@
     ],
     "toolCount": 364,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SENDGRID_ACTIVATE_TEMPLATE_VERSION",
@@ -55699,7 +55849,7 @@
     ],
     "toolCount": 401,
     "triggerCount": 3,
-    "version": "20260415_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PIPEDRIVE_ADD_ACTIVITY_TYPE",
@@ -57827,7 +57977,7 @@
     ],
     "toolCount": 41,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "BAMBOOHR_ATS_CREATE_CANDIDATE",
@@ -58142,7 +58292,7 @@
     ],
     "toolCount": 17,
     "triggerCount": 1,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "WHATSAPP_CREATE_MESSAGE_TEMPLATE",
@@ -58500,7 +58650,7 @@
     ],
     "toolCount": 20,
     "triggerCount": 2,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "ZENDESK_COUNT_ZENDESK_ORGANIZATIONS",
@@ -58689,7 +58839,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "GOOGLEPHOTOS_ADD_ENRICHMENT",
@@ -58825,7 +58975,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LMNT_CREATE_VOICE",
@@ -58907,7 +59057,7 @@
     ],
     "toolCount": 52,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "METAADS_CREATE_AD",
@@ -59369,9 +59519,9 @@
     "composioManagedAuthSchemes": [
       "OAUTH2"
     ],
-    "toolCount": 431,
+    "toolCount": 437,
     "triggerCount": 20,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLESUPER_ACL_DELETE",
@@ -60584,6 +60734,11 @@
         "description": "Tool to insert a string of text at a specified location within a Google Document. Use when you need to add new text content to an existing document. IMPORTANT: Two ways to specify insertion location: 1. Use 'insertion_index' to insert at a specific position (index 1 is safe for document start) 2. Use 'append_to_end=true' to append text to the end of the document (recommended for appending) CRITICAL CONSTRAINT: When using insertion_index, the index MUST fall within the bounds of an EXISTING paragraph. You cannot insert text at arbitrary indices or at structural boundaries (e.g., table starts). The index must also be strictly less than the document's end index. To safely append text without index concerns, use append_to_end=true."
       },
       {
+        "slug": "GOOGLESUPER_LIST_ACCESSIBLE_CUSTOMERS",
+        "name": "List Accessible Customers",
+        "description": "ListAccessibleCustomers retrieves all Google Ads customer accounts accessible to the authenticated user. Returns resource names of customers (e.g., customers/1234567890) that can be accessed with the current OAuth credentials. Use this action to discover which customer IDs are available before making other API calls. Use this action when you need to determine which customer accounts the authenticated user has access to, or when you want to populate a dropdown of available accounts for the user to select from."
+      },
+      {
         "slug": "GOOGLESUPER_LIST_ACCESS_PROPOSALS",
         "name": "List Access Proposals",
         "description": "Tool to list pending access proposals on a file. Use when you need to retrieve access proposals for a specific file. Note: Only approvers can list access proposals; non-approvers will receive a 403 error."
@@ -60644,9 +60799,19 @@
         "description": "Tool to list BigQuery Links on a property. Use when you need to retrieve BigQuery link resources associated with a Google Analytics property. Results support pagination for large datasets."
       },
       {
+        "slug": "GOOGLESUPER_LIST_BUILDINGS",
+        "name": "List Buildings",
+        "description": "Lists all buildings for a Google Workspace customer account with full details including addresses, coordinates, and floor names. Use this action when you need to retrieve the complete list of physical building locations configured in Google Workspace Calendar resources. This is useful for workspace administrators managing conference room and resource scheduling across multiple office buildings. Requires Google Workspace administrator privileges with Directory API access."
+      },
+      {
         "slug": "GOOGLESUPER_LIST_CALCULATED_METRICS",
         "name": "List Calculated Metrics",
         "description": "List Calculated Metrics"
+      },
+      {
+        "slug": "GOOGLESUPER_LIST_CALENDAR_RESOURCES",
+        "name": "List Calendar Resources",
+        "description": "Retrieves calendar resources (such as conference rooms) from a Google Workspace domain using the Admin SDK Directory API. Use this action when you need to list available meeting rooms, conference spaces, or other bookable calendar resources in an organization. The action supports filtering by resource category, capacity, building location, and other criteria. IMPORTANT: This requires Admin SDK Directory API access and appropriate admin permissions - it is NOT available for personal Gmail accounts, only Google Workspace domains."
       },
       {
         "slug": "GOOGLESUPER_LIST_CALENDARS",
@@ -60979,6 +61144,16 @@
         "description": "Moves an existing, non-deleted email message to the trash for the specified user. Trashed messages are recoverable and still count toward storage quota until purged. Prefer this over GMAIL_BATCH_DELETE_MESSAGES when recovery may be needed. For bulk operations, use GMAIL_BATCH_MODIFY_MESSAGES or GMAIL_BATCH_DELETE_MESSAGES instead of repeated calls to this tool."
       },
       {
+        "slug": "GOOGLESUPER_MUTATE_AD_GROUPS",
+        "name": "Mutate Ad Groups",
+        "description": "Create, update, or remove ad groups within Google Ads campaigns. Supports batch operations with multiple ad group changes in a single request. Use when you need to manage ad groups programmatically, such as creating new ad groups for campaigns, updating ad group settings or status, or removing ad groups that are no longer needed. This action is irreversible for remove operations — deleted ad groups cannot be recovered once removed."
+      },
+      {
+        "slug": "GOOGLESUPER_MUTATE_CAMPAIGNS",
+        "name": "Mutate Campaigns",
+        "description": "Create, update, or remove Google Ads campaigns in batch. Supports multiple operations (create, update, remove) in a single request. Use when managing campaign lifecycle, applying bulk changes, or automating campaign management workflows. This action is irreversible for remove operations — deleted campaigns cannot be recovered. Plan accordingly and consider using validate_only=true to test changes before applying them."
+      },
+      {
         "slug": "GOOGLESUPER_MUTATE_CONDITIONAL_FORMAT_RULES",
         "name": "Mutate conditional format rules",
         "description": "Add, update, delete, or reorder conditional format rules on a Google Sheet. Use when you need to create, modify, or remove conditional formatting without manually building batchUpdate requests. Supports four operations: ADD (create new rule), UPDATE (replace existing rule), DELETE (remove rule), MOVE (reorder rules by changing index)."
@@ -61167,6 +61342,11 @@
         "slug": "GOOGLESUPER_SEARCH_SPREADSHEETS",
         "name": "Search Spreadsheets",
         "description": "Search for Google Spreadsheets using various filters including name, content, date ranges, and more."
+      },
+      {
+        "slug": "GOOGLESUPER_SEARCH_STREAM_GAQL",
+        "name": "Search Stream GAQL",
+        "description": "Execute a Google Ads Query Language (GAQL) query and stream all results in a single response. This method is more efficient than paginated search for bulk data retrieval of campaigns, ad groups, and performance metrics (clicks, impressions, cost). Use this action when you need the entire result set without pagination. Results are returned as a single response containing all matching rows."
       },
       {
         "slug": "GOOGLESUPER_SEND_DRAFT",
@@ -61613,7 +61793,7 @@
       {
         "slug": "GOOGLESUPER_EVENT_STARTING_SOON_TRIGGER",
         "name": "Event Starting Soon",
-        "description": "Triggers when a calendar event is within a configured number of minutes from starting.\n    Includes countdown window, start time, and event metadata."
+        "description": "Triggers when a calendar event is within a configured number of minutes from starting.\n    Returns event details, time remaining, attendees, and join links when available."
       },
       {
         "slug": "GOOGLESUPER_FILE_CREATED_TRIGGER",
@@ -61716,7 +61896,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "BROWSER_TOOL_CREATE_TASK",
@@ -62051,7 +62231,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TYPEFULLY_CREATE_DRAFT",
@@ -62333,7 +62513,7 @@
     ],
     "toolCount": 68,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ROCKETLANE_ADD_ASSIGNEE_TO_TASK",
@@ -62717,7 +62897,7 @@
     ],
     "toolCount": 104,
     "triggerCount": 11,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ZOOM_ADD_A_MEETING_REGISTRANT",
@@ -63452,7 +63632,7 @@
     ],
     "toolCount": 67,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RETELLAI_ADD_COMMUNITY_VOICE",
@@ -63829,7 +64009,7 @@
     ],
     "toolCount": 172,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SERVICENOW_ATTACH_FILE_TO_RECORD",
@@ -64787,9 +64967,9 @@
     "composioManagedAuthSchemes": [
       "OAUTH2"
     ],
-    "toolCount": 5,
+    "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLEADS_ADD_OR_REMOVE_TO_CUSTOMER_LIST",
@@ -64815,6 +64995,26 @@
         "slug": "GOOGLEADS_GET_CUSTOMER_LISTS",
         "name": "Get customer lists",
         "description": "GetCustomerLists Tool lists all customer lists (audience/remarketing lists) in Google Ads. These are user segments for targeting, not Google Ads accounts — list IDs are distinct from account IDs. When multiple lists share similar names, review all returned results before selecting one for downstream operations."
+      },
+      {
+        "slug": "GOOGLEADS_LIST_ACCESSIBLE_CUSTOMERS",
+        "name": "List Accessible Customers",
+        "description": "ListAccessibleCustomers retrieves all Google Ads customer accounts accessible to the authenticated user. Returns resource names of customers (e.g., customers/1234567890) that can be accessed with the current OAuth credentials. Use this action to discover which customer IDs are available before making other API calls. Use this action when you need to determine which customer accounts the authenticated user has access to, or when you want to populate a dropdown of available accounts for the user to select from."
+      },
+      {
+        "slug": "GOOGLEADS_MUTATE_AD_GROUPS",
+        "name": "Mutate Ad Groups",
+        "description": "Create, update, or remove ad groups within Google Ads campaigns. Supports batch operations with multiple ad group changes in a single request. Use when you need to manage ad groups programmatically, such as creating new ad groups for campaigns, updating ad group settings or status, or removing ad groups that are no longer needed. This action is irreversible for remove operations — deleted ad groups cannot be recovered once removed."
+      },
+      {
+        "slug": "GOOGLEADS_MUTATE_CAMPAIGNS",
+        "name": "Mutate Campaigns",
+        "description": "Create, update, or remove Google Ads campaigns in batch. Supports multiple operations (create, update, remove) in a single request. Use when managing campaign lifecycle, applying bulk changes, or automating campaign management workflows. This action is irreversible for remove operations — deleted campaigns cannot be recovered. Plan accordingly and consider using validate_only=true to test changes before applying them."
+      },
+      {
+        "slug": "GOOGLEADS_SEARCH_STREAM_GAQL",
+        "name": "Search Stream GAQL",
+        "description": "Execute a Google Ads Query Language (GAQL) query and stream all results in a single response. This method is more efficient than paginated search for bulk data retrieval of campaigns, ad groups, and performance metrics (clicks, impressions, cost). Use this action when you need the entire result set without pagination. Results are returned as a single response containing all matching rows."
       }
     ],
     "triggers": [],
@@ -64838,6 +65038,14 @@
                 "displayName": "Client secret",
                 "type": "string",
                 "description": "Client secret of the app",
+                "required": true,
+                "default": null
+              },
+              {
+                "name": "generic_token",
+                "displayName": "Developer Token",
+                "type": "string",
+                "description": "Google Ads API developer token. Found in your Google Ads Manager account under Tools → API Center.",
                 "required": true,
                 "default": null
               }
@@ -64864,18 +65072,10 @@
           "connected_account_initiation": {
             "required": [
               {
-                "name": "generic_token",
-                "displayName": "Developer Token",
-                "type": "string",
-                "description": "The developer token for the Google Ads account",
-                "required": true,
-                "default": null
-              },
-              {
                 "name": "generic_id",
                 "displayName": "Customer ID",
                 "type": "string",
-                "description": "The customer ID for the Google Ads account. Must be numeric-only, without dashes or spaces (e.g., 1234567890).",
+                "description": "Your 10-digit Google Ads Customer ID (no dashes). Find it in Google Ads under Help → Customer ID, or in the URL bar.",
                 "required": true,
                 "default": null
               }
@@ -67345,7 +67545,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FOMO_CREATE_FOMO_EVENT",
@@ -67640,7 +67840,7 @@
     ],
     "toolCount": 77,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MIRO_ATTACH_TAG_TO_ITEM",
@@ -68095,7 +68295,7 @@
     ],
     "toolCount": 89,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SHARE_POINT_ADD_ATTACHMENT_TO_LIST_ITEM",
@@ -68821,7 +69021,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "APPDRAG_EXECUTE_FUNCTION_DELETE_DEFAULT",
@@ -69021,7 +69221,7 @@
     "authSchemes": [],
     "toolCount": 48,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BREEZY_HR_ADD_CANDIDATE_CUSTOM_ATTRIBUTE",
@@ -69277,7 +69477,7 @@
     ],
     "toolCount": 248,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "LAUNCH_DARKLY_ADD_MEMBER_TO_TEAMS",
@@ -70558,7 +70758,7 @@
     ],
     "toolCount": 86,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAILERLITE_ADD_PRODUCT_TO_CATEGORY",
@@ -71033,7 +71233,7 @@
     ],
     "toolCount": 106,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CONTENTFUL_ACTIVATE_CONTENT_TYPE",
@@ -71668,7 +71868,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "CLOSE_CREATE_CALL",
@@ -72039,7 +72239,7 @@
     ],
     "toolCount": 4,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MORE_TREES_CREATE_USER",
@@ -72108,7 +72308,7 @@
     ],
     "toolCount": 86,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "NETSUITE_ASYNC_GET_JOB_STATUS",
@@ -72714,7 +72914,7 @@
     ],
     "toolCount": 63,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RECALLAI_CREATE_BOT",
@@ -73512,7 +73712,7 @@
     ],
     "toolCount": 265,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ZOHO_BOOKS_ACCEPT_ESTIMATE",
@@ -74915,7 +75115,7 @@
     ],
     "toolCount": 58,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ZOHO_INVENTORY_ADD_CREDIT_NOTE_COMMENT",
@@ -75639,7 +75839,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MOPINION_GET_ACCOUNT",
@@ -75866,7 +76066,7 @@
     ],
     "toolCount": 26,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "WEBEX_CREATE_TEAM",
@@ -76141,7 +76341,7 @@
     ],
     "toolCount": 48,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CANVA_ACCESS_USER_SPECIFIC_BRAND_TEMPLATES_LIST",
@@ -76447,7 +76647,7 @@
     ],
     "toolCount": 101,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DIGICERT_ADD_TAGS_TO_CERTIFICATE",
@@ -77167,7 +77367,7 @@
     ],
     "toolCount": 56,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DROPBOX_SIGN_ADD_USER_TO_TEAM",
@@ -77539,7 +77739,7 @@
     ],
     "toolCount": 41,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TIMELY_CREATE_CLIENT",
@@ -77822,7 +78022,7 @@
     ],
     "toolCount": 286,
     "triggerCount": 20,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BOX_ADD_ALLOWED_COLLABORATION_DOMAIN",
@@ -79419,7 +79619,7 @@
     ],
     "toolCount": 25,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "SMUGMUG_GET_ALBUM",
@@ -79589,7 +79789,7 @@
     ],
     "toolCount": 99,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "PRODUCTBOARD_ADD_NOTE_FOLLOWERS",
@@ -80268,7 +80468,7 @@
     ],
     "toolCount": 52,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "WEBFLOW_CREATE_ASSET_FOLDER",
@@ -80617,7 +80817,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "AMCARDS_GET_API_SCHEMA",
@@ -80708,7 +80908,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SIMPLESAT_CREATE_OR_UPDATE_CUSTOMER2",
@@ -80794,7 +80994,7 @@
     ],
     "toolCount": 53,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FLUTTERWAVE_CANCEL_PAYMENT_PLAN",
@@ -81159,7 +81359,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FRESHBOOKS_CREATE_WEBHOOK",
@@ -81341,7 +81541,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260420_00",
     "tools": [
       {
         "slug": "SCREENSHOTONE_GET_USAGE",
@@ -81419,7 +81619,7 @@
     ],
     "toolCount": 30,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CHATWORK_CREATE_ROOM",
@@ -81901,7 +82101,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DEMIO_CREATE_JOIN_LINK",
@@ -81980,7 +82180,7 @@
     ],
     "toolCount": 67,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ALTOVIZ_CREATE_CONTACT",
@@ -82356,7 +82556,7 @@
     ],
     "toolCount": 45,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "D2LBRIGHTSPACE_COPY_ROLE",
@@ -82664,7 +82864,7 @@
     ],
     "toolCount": 314,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BLACKBOARD_ACCESS_CONTROLLED_COURSE_ANNOUNCEMENTS",
@@ -84746,7 +84946,7 @@
     ],
     "toolCount": 54,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ZOHO_BIGIN_ADD_RECORDS",
@@ -85091,7 +85291,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PANDADOC_CREATE_DOCUMENT_ATTACHMENT",
@@ -85202,7 +85402,7 @@
     ],
     "toolCount": 3,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "WORKIOM_CREATE_RECORD",
@@ -85258,7 +85458,7 @@
     ],
     "toolCount": 42,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LEXOFFICE_CREATE_ARTICLE",
@@ -85513,7 +85713,7 @@
     ],
     "toolCount": 32,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GORGIAS_ADD_TICKET_TAGS",
@@ -85790,7 +85990,7 @@
     ],
     "toolCount": 69,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLE_ANALYTICS_ARCHIVE_CUSTOM_DIMENSION",
@@ -86204,7 +86404,7 @@
     ],
     "toolCount": 84,
     "triggerCount": 1,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TODOIST_ADD_WORKSPACE",
@@ -86889,7 +87089,7 @@
     ],
     "toolCount": 125,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260420_00",
     "tools": [
       {
         "slug": "ASHBY_ADD_CANDIDATE_PROJECT",
@@ -87555,7 +87755,7 @@
     ],
     "toolCount": 840,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DATAROBOT_ADD_USERS_TO_GROUP",
@@ -91796,7 +91996,7 @@
     ],
     "toolCount": 102,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NGROK_CREATE_API_KEY",
@@ -92350,7 +92550,7 @@
     ],
     "toolCount": 96,
     "triggerCount": 0,
-    "version": "20260413_01",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SQUARE_ACCEPT_DISPUTE",
@@ -92899,7 +93099,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "YANDEX_GEOCODER_REVERSE",
@@ -93070,7 +93270,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BASEROW_CREATE_USER",
@@ -93185,7 +93385,7 @@
     ],
     "toolCount": 192,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "DIALPAD_ACCESS_CONTROL_POLICIES_LISTING",
@@ -94311,7 +94511,7 @@
     ],
     "toolCount": 27,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "YNAB_CREATE_ACCOUNT",
@@ -94512,7 +94712,7 @@
     ],
     "toolCount": 53,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "KOMMO_ADD_AI_SOURCE_FILE",
@@ -95110,7 +95310,7 @@
     ],
     "toolCount": 30,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAINTAINX_CREATE_CATEGORY",
@@ -95301,7 +95501,7 @@
     ],
     "toolCount": 2,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "TINYURL_CREATE_SHORT_URL",
@@ -95826,7 +96026,7 @@
     ],
     "toolCount": 36,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ALCHEMY_COMPUTE_RARITY_V3",
@@ -96050,7 +96250,7 @@
     ],
     "toolCount": 7,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GUMROAD_GET_RESOURCE_SUBSCRIPTIONS",
@@ -96217,7 +96417,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "OPEN_SEA_BUILD_CRITERIA_OFFER",
@@ -96378,7 +96578,7 @@
     ],
     "toolCount": 4,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HUMANLOOP_CREATE_PROJECT",
@@ -96584,9 +96784,12 @@
       "BASIC",
       "OAUTH2"
     ],
+    "composioManagedAuthSchemes": [
+      "OAUTH2"
+    ],
     "toolCount": 58,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GONG_ADD_CALL_MEDIA_V2_CALLS_ID_MEDIA",
@@ -97135,7 +97338,7 @@
     ],
     "toolCount": 28,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SERVICEM8_CREATE_JOB_NOTE",
@@ -97341,7 +97544,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TEXTRAZOR_ACCOUNT_INFO",
@@ -97869,7 +98072,7 @@
     ],
     "toolCount": 57,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HARVEST_CREATE_CLIENT",
@@ -98223,7 +98426,7 @@
     ],
     "toolCount": 17,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260420_00",
     "tools": [
       {
         "slug": "WAKATIME_GET_AGGREGATE_STATS",
@@ -98374,7 +98577,7 @@
     ],
     "toolCount": 41,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "XERO_CREATE_BANK_TRANSACTION",
@@ -98784,7 +98987,7 @@
     ],
     "toolCount": 298,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ACTIVE_CAMPAIGN_ADD_BROWSE_SESSION_CART",
@@ -100326,7 +100529,7 @@
     ],
     "toolCount": 15,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ZOHO_MAIL_ACCOUNTS_LIST_ACCOUNTS",
@@ -101193,7 +101396,7 @@
     ],
     "toolCount": 133,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "INTERCOM_ADD_SUBSCRIPTION_TO_A_CONTACT",
@@ -101932,7 +102135,7 @@
     ],
     "toolCount": 94,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HIGHLEVEL_CHECK_ACCOUNT_FUNDS",
@@ -103228,7 +103431,7 @@
     ],
     "toolCount": 30,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "INTERZOID_ADDRESS_PARSE",
@@ -103652,7 +103855,7 @@
     ],
     "toolCount": 137,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ZOHO_INVOICE_ADD_CREDITNOTE_TO_INVOICES",
@@ -104415,7 +104618,7 @@
     ],
     "toolCount": 121,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "STACK_EXCHANGE_CREATE_FILTER",
@@ -105086,7 +105289,7 @@
     ],
     "toolCount": 42,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BOTBABA_CART_CREATION_EVENT_SIMULATOR",
@@ -105338,7 +105541,7 @@
     ],
     "toolCount": 43,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "DATADOG_CREATE_DASHBOARD",
@@ -105667,7 +105870,7 @@
     ],
     "toolCount": 2,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "WABOXAPP_WEBHOOK_ACK_EVENT",
@@ -106178,7 +106381,7 @@
     ],
     "toolCount": 36,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ACCREDIBLE_CERTIFICATES_BULK_CREATE_CREDENTIALS_V2",
@@ -107377,7 +107580,7 @@
     ],
     "toolCount": 2,
     "triggerCount": 0,
-    "version": "20260410_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ADDRESSZEN_KEY_AVAILABILITY",
@@ -107619,7 +107822,7 @@
     ],
     "toolCount": 119,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "AFFINDA_ADD_TAG_TO_DOCUMENTS",
@@ -108391,7 +108594,7 @@
     ],
     "toolCount": 79,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "AGENTY_ADD_LIST_ROWS",
@@ -108827,7 +109030,7 @@
     ],
     "toolCount": 18,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "AGILED_CREATE_EXPENSE",
@@ -109362,7 +109565,7 @@
     ],
     "toolCount": 133,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ALGOLIA_ADD_AB_TEST",
@@ -110564,7 +110767,7 @@
     ],
     "toolCount": 30,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "AMARA_ADD_SUBTITLE_NOTE",
@@ -111346,7 +111549,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ANONYFLOW_ANONYMIZE_PACKET",
@@ -111529,7 +111732,7 @@
     ],
     "toolCount": 129,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "API_NINJAS_ANALYZE_SENTIMENT",
@@ -112215,7 +112418,7 @@
     ],
     "toolCount": 67,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "API_SPORTS_GET_AFL_GAMES",
@@ -112884,7 +113087,7 @@
     ],
     "toolCount": 113,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260420_00",
     "tools": [
       {
         "slug": "APIFY_ACT_BUILDS_POST",
@@ -113708,7 +113911,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "APIPIE_AI_ANONYMIZE_TEXT",
@@ -114021,7 +114224,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "APPOINTO_AUTHENTICATE",
@@ -114117,7 +114320,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260410_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "APPVEYOR_DELETE_BUILD",
@@ -114228,7 +114431,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260420_00",
     "tools": [
       {
         "slug": "ARYN_CREATE_DOCSET",
@@ -114314,7 +114517,7 @@
     ],
     "toolCount": 23,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ASCORA_CREATE_NOTE",
@@ -114470,7 +114673,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ASIN_DATA_API_CLEAR_COLLECTION_REQUESTS",
@@ -114592,7 +114795,7 @@
     ],
     "toolCount": 4,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ASYNC_INTERVIEW_DELETE_JOB",
@@ -114830,7 +115033,7 @@
     ],
     "toolCount": 30,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BACKENDLESS_COPY_FILE",
@@ -115173,7 +115376,7 @@
     ],
     "toolCount": 140,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BASECAMP_COMPLETE_TODO",
@@ -115948,7 +116151,7 @@
     ],
     "toolCount": 106,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BASELINKER_ADD_INVENTORY",
@@ -116519,7 +116722,7 @@
     ],
     "toolCount": 19,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BASIN_CREATE_FORM",
@@ -116881,7 +117084,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BEACONSTAC_CREATE_PLACE",
@@ -117027,7 +117230,7 @@
     ],
     "toolCount": 12,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BEAMER_COUNT_POST_COMMENTS",
@@ -117165,7 +117368,7 @@
     ],
     "toolCount": 298,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BENCHMARK_EMAIL_ADD_EMAIL_IN_AUTOMATION",
@@ -118696,7 +118899,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260408_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BENZINGA_GET_CALENDAR_EARNINGS_STREAM",
@@ -118787,7 +118990,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BESTBUY_GET_CATEGORIES",
@@ -118868,7 +119071,7 @@
     ],
     "toolCount": 23,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BETTER_PROPOSALS_CREATE_COMPANY",
@@ -119024,7 +119227,7 @@
     ],
     "toolCount": 117,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BETTER_STACK_ACKNOWLEDGE_INCIDENT",
@@ -119725,7 +119928,7 @@
     ],
     "toolCount": 38,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BIDSKETCH_CREATE_CLIENT",
@@ -120843,7 +121046,7 @@
     ],
     "toolCount": 92,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BLAZEMETER_CONVERT_TRANSACTIONS",
@@ -121640,7 +121843,7 @@
     ],
     "toolCount": 142,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "BOOKINGMOOD_CREATE_PRODUCT",
@@ -122391,7 +122594,7 @@
     ],
     "toolCount": 49,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "BOOQABLE_CREATE_CUSTOMER",
@@ -122685,7 +122888,7 @@
     ],
     "toolCount": 53,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "BOTPRESS_BREAK_DOWN_WORKSPACE_USAGE_BY_BOT",
@@ -123092,7 +123295,7 @@
     ],
     "toolCount": 31,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BOTSTAR_CREATE_BOT",
@@ -123379,7 +123582,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BOXHERO_DELETE_ITEM",
@@ -123490,7 +123693,7 @@
     ],
     "toolCount": 50,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BREATHEHR_APPROVE_LEAVE_REQUEST",
@@ -123781,7 +123984,7 @@
     ],
     "toolCount": 18,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BREEZE_ADD_PROJECT_PEOPLE",
@@ -124011,7 +124214,7 @@
     ],
     "toolCount": 44,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BRILLIANT_DIRECTORIES_CREATE_ALBUM_PHOTO",
@@ -124356,7 +124559,7 @@
     ],
     "toolCount": 16,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BTCPAY_SERVER_CREATE_PAYMENT_REQUEST",
@@ -124547,7 +124750,7 @@
     ],
     "toolCount": 26,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BUGHERD_ADD_GUEST_TO_PROJECT",
@@ -124718,7 +124921,7 @@
     ],
     "toolCount": 60,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "BUGSNAG_ADD_ORGANIZATION_COLLABORATOR_TEAM_MEMBERSHIPS",
@@ -125230,7 +125433,7 @@
     ],
     "toolCount": 129,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BUNNYCDN_ADD_ALLOWED_REFERER",
@@ -125916,7 +126119,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "BYTEFORMS_CREATE_FORM",
@@ -125982,7 +126185,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CABINPANDA_CREATE_FORM",
@@ -126385,7 +126588,7 @@
     ],
     "toolCount": 29,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CALLINGLY_ACTIVATE_DEACTIVATE_CLIENT",
@@ -126571,7 +126774,7 @@
     ],
     "toolCount": 26,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CALLPAGE_ADD_USERS_TO_WIDGET",
@@ -126742,7 +126945,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260420_00",
     "tools": [
       {
         "slug": "CAMPAIGN_CLEANER_DELETE_CAMPAIGN",
@@ -126808,7 +127011,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "CAMPAYN_CREATE_CONTACT",
@@ -127089,7 +127292,7 @@
     ],
     "toolCount": 109,
     "triggerCount": 0,
-    "version": "20260415_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CAPSULE_CRM_ADD_PROJECT_PARTY",
@@ -127723,7 +127926,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260420_00",
     "tools": [
       {
         "slug": "CARBONE_DELETE_TEMPLATE",
@@ -127819,7 +128022,7 @@
     ],
     "toolCount": 29,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CARDLY_CREATE_CONTACT_LIST",
@@ -128091,7 +128294,7 @@
     ],
     "toolCount": 18,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CATS_CREATE_FAVOURITE",
@@ -128278,7 +128481,7 @@
     ],
     "toolCount": 117,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "CELIGO_ASSIGN_EXPORT_ERROR",
@@ -128603,7 +128806,7 @@
       {
         "slug": "CELIGO_GET_JOB_ERRORS",
         "name": "Get Job Errors",
-        "description": "Tool to retrieve errors for a specific job in Celigo. Use when a job has 1000 or fewer errors to retrieve the error details directly."
+        "description": "Tool to retrieve errors for a specific job in Celigo. Supports pagination via page_size and page parameters to handle jobs with large numbers of errors."
       },
       {
         "slug": "CELIGO_GET_RESOLVED_ERRORS",
@@ -129359,7 +129562,7 @@
     ],
     "toolCount": 186,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CENTRALSTATIONCRM_CHECK_CONNECTION",
@@ -130623,7 +130826,7 @@
     ],
     "toolCount": 284,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CHATBOTKIT_ATTACH_DATASET_FILE",
@@ -132572,7 +132775,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CLAID_AI_BACKGROUND_GENERATE",
@@ -132683,7 +132886,7 @@
     ],
     "toolCount": 28,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CLASSMARKER_CREATE_ACCESS_LIST_ITEM",
@@ -132872,7 +133075,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CLEAROUT_AUTOCOMPLETE_COMPANY_TO_DOMAIN",
@@ -133114,7 +133317,7 @@
     ],
     "toolCount": 39,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CLICKMEETING_CREATE_ACCESS_TOKENS",
@@ -134229,7 +134432,7 @@
     ],
     "toolCount": 57,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CLIENTARY_CREATE_CLIENT",
@@ -134564,7 +134767,7 @@
     ],
     "toolCount": 75,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "CLOCKIFY_ADD_USER_TO_GROUP",
@@ -135037,7 +135240,7 @@
     ],
     "toolCount": 150,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CLOUDCART_ADD_CATEGORY_PROPERTIES",
@@ -135836,7 +136039,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CLOUDCONVERT_CREATE_EXPORT_GOOGLE_CLOUD_STORAGE_TASK",
@@ -136157,7 +136360,7 @@
     ],
     "toolCount": 109,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CLOUDINARY_ACTIVATE_LIVE_STREAM",
@@ -136759,7 +136962,7 @@
     ],
     "toolCount": 16,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CLOUDLAYER_ADD_STORAGE",
@@ -136880,7 +137083,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CLOUDPRESS_GET_ACCOUNT_INFORMATION",
@@ -136946,7 +137149,7 @@
     ],
     "toolCount": 4,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "COASSEMBLE_GET_CLIENTS",
@@ -137015,7 +137218,7 @@
     ],
     "toolCount": 18,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CODACY_CREATE_API_TOKEN",
@@ -137297,7 +137500,7 @@
     ],
     "toolCount": 16,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CODEREADR_COLLECT_DATA_WITH_QUESTIONS",
@@ -137564,7 +137767,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "COINMARKETCAP_CRYPTOCURRENCY_LISTINGS_LATEST",
@@ -138169,7 +138372,7 @@
     ],
     "toolCount": 32,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "COMPANYENRICH_AUTOCOMPLETE_COMPANIES",
@@ -138370,7 +138573,7 @@
     ],
     "toolCount": 16,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CONNECTEAM_ARCHIVE_USERS",
@@ -138610,7 +138813,7 @@
     ],
     "toolCount": 54,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CONTROL_D_DELETE_DEVICES_DEVICE_ID",
@@ -138921,7 +139124,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260420_00",
     "tools": [
       {
         "slug": "CONVERSION_TOOLS_CONVERT_EXCEL_TO_HTML",
@@ -139148,7 +139351,7 @@
     ],
     "toolCount": 19,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CONVEX_CREATE_DEPLOY_KEY",
@@ -139591,7 +139794,7 @@
     ],
     "toolCount": 23,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CORRENTLY_CO2_METER_UPDATE_READING",
@@ -139747,7 +139950,7 @@
     ],
     "toolCount": 25,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "COUNTDOWN_API_CLEAR_ALL_REQUESTS",
@@ -139913,7 +140116,7 @@
     ],
     "toolCount": 384,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "COUPA_ABANDON_AN_INVOICE",
@@ -142013,7 +142216,7 @@
     ],
     "toolCount": 231,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CROWDIN_ADD_BRANCH",
@@ -143529,7 +143732,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CURATED_CREATE_DRAFT_ISSUE",
@@ -143798,7 +144001,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CUSTOMERIO_ADD_PERSON_TO_GROUP",
@@ -143968,7 +144171,7 @@
     ],
     "toolCount": 40,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CUSTOMGPT_ACTIVATE_PERSONA_VERSION",
@@ -144209,7 +144412,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260410_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "CUSTOMJS_AUTHENTICATE_API_KEY",
@@ -144690,7 +144893,7 @@
     ],
     "toolCount": 12,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DAFFY_CREATE_GIFT",
@@ -145135,7 +145338,7 @@
     ],
     "toolCount": 7,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DATABOX_CREATE_DATASET",
@@ -145212,7 +145415,7 @@
     ],
     "toolCount": 426,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DATABRICKS_ADD_MEMBER_TO_SECURITY_GROUP",
@@ -149625,7 +149828,7 @@
     ],
     "toolCount": 60,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DEPLOYHQ_DELETE_COMMAND",
@@ -149982,7 +150185,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DESKTIME_CREATE_PROJECT_WITH_TASK",
@@ -150456,7 +150659,7 @@
     ],
     "toolCount": 25,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DIALMYCALLS_ADD_ACCESS_ACCOUNT",
@@ -150668,7 +150871,7 @@
     ],
     "toolCount": 35,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "DIFFBOT_COMBINE_ENTITY_PROFILES",
@@ -150888,7 +151091,7 @@
     ],
     "toolCount": 48,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DIGITAL_OCEAN_CREATE_CUSTOM_IMAGE",
@@ -151217,7 +151420,7 @@
     ],
     "toolCount": 170,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DNSFILTER_ADD_ALLOWED_APPLICATION",
@@ -152224,7 +152427,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DOCKER_HUB_ADD_ORG_MEMBER",
@@ -152385,7 +152588,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DOCNIFY_ADD_DOCUMENT_RECIPIENT",
@@ -152729,7 +152932,7 @@
     ],
     "toolCount": 38,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DOCSBOT_AI_CAPTURE_CONVERSATION_LEAD",
@@ -153142,7 +153345,7 @@
     ],
     "toolCount": 77,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DOCUMENSO_CREATE_DOCUMENT_BETA",
@@ -153639,7 +153842,7 @@
     ],
     "toolCount": 4,
     "triggerCount": 0,
-    "version": "20260415_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DOCUPILOT_CREATE_FOLDER",
@@ -153772,7 +153975,7 @@
     ],
     "toolCount": 22,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DOCUSEAL_ARCHIVE_SUBMISSION",
@@ -153931,7 +154134,7 @@
     ],
     "toolCount": 62,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DOPPLER_ACTIVITY_LOGS_LIST",
@@ -154282,7 +154485,7 @@
     ],
     "toolCount": 38,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DOPPLER_MARKETING_AUTOMATION_ADD_SUBSCRIBER",
@@ -154521,7 +154724,7 @@
     ],
     "toolCount": 29,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DOPPLER_SECRETOPS_ACTIVITY_LOGS_LIST",
@@ -155107,7 +155310,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "DPD2_GET_STOREFRONT",
@@ -155242,7 +155445,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "DREAMSTUDIO_GENERATE_IMAGE_FROM_IMAGE",
@@ -156016,7 +156219,7 @@
     ],
     "toolCount": 27,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "E2B_CONNECT_SANDBOX",
@@ -156357,7 +156560,7 @@
     ],
     "toolCount": 60,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "EGNYTE_CREATE_AUDIT_PERMISSIONS",
@@ -156841,7 +157044,7 @@
     ],
     "toolCount": 124,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ELEVENREADER_ADD_DOCUMENTATION_TO_KNOWLEDGE_BASE",
@@ -157502,7 +157705,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260413_01",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ELORUS_CREATE_INVOICE",
@@ -158075,7 +158278,7 @@
     ],
     "toolCount": 69,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ENCODIAN_ADD_ATTACHMENTS_TO_PDF",
@@ -158791,7 +158994,7 @@
     ],
     "toolCount": 38,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ENGINEMAILER_ACTIVATE_SUBSCRIBER",
@@ -159022,7 +159225,7 @@
     ],
     "toolCount": 19,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ENIGMA_CREATE_LIST",
@@ -159158,7 +159361,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260410_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "EODHD_APIS_GET_EOD_YAHOO_STYLE",
@@ -159746,7 +159949,7 @@
     ],
     "toolCount": 89,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ESPUTNIK_ADD_CONTACT",
@@ -160232,7 +160435,7 @@
     ],
     "toolCount": 78,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ETERMIN_ASSIGN_CALENDAR_SERVICE",
@@ -160788,7 +160991,7 @@
     ],
     "toolCount": 22,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "EVENTEE_ADD_SPEAKER",
@@ -161025,7 +161228,7 @@
     ],
     "toolCount": 38,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "EVERHOUR_CLIENT_CREATE",
@@ -161256,7 +161459,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "EVERSIGN_AUDIT_LOG",
@@ -161359,7 +161562,7 @@
     ],
     "toolCount": 54,
     "triggerCount": 0,
-    "version": "20260415_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "EXCEL_ADD_CHART",
@@ -161734,7 +161937,7 @@
     ],
     "toolCount": 18,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "EXPOFP_ADD_CATEGORY",
@@ -161972,7 +162175,7 @@
     ],
     "toolCount": 1,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FACEUP_GRAPHQL_STATISTICS_QUERY",
@@ -162737,7 +162940,7 @@
     ],
     "toolCount": 7,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FATHOM_CREATE_WEBHOOK",
@@ -162861,7 +163064,7 @@
     ],
     "toolCount": 19,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "FEATHERY_ACCOUNT_EDIT",
@@ -163113,7 +163316,7 @@
     ],
     "toolCount": 26,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FIBERY_DELETE_CUSTOM_APP_ENDPOINT",
@@ -163528,7 +163731,7 @@
     ],
     "toolCount": 7,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FILES_COM_DELETE_API_KEY",
@@ -163763,7 +163966,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FINDYMAIL_ADD_EXCLUDED_DOMAIN",
@@ -163909,7 +164112,7 @@
     ],
     "toolCount": 33,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FINERWORKS_ADD_IMAGES",
@@ -164625,7 +164828,7 @@
     ],
     "toolCount": 124,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FIREBERRY_CREATE_A_COMPETITOR",
@@ -165286,7 +165489,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FIRMAO_CREATE_INVOICE",
@@ -165874,7 +166077,7 @@
     ],
     "toolCount": 45,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FLY_ADD_WIRE_GUARD_PEER",
@@ -166197,7 +166400,7 @@
     ],
     "toolCount": 23,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FOLK_CREATE_COMPANY",
@@ -166354,7 +166557,7 @@
     ],
     "toolCount": 99,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FOLLOW_UP_BOSS_CREATE_ACTION_PLANS_PEOPLE",
@@ -167119,7 +167322,7 @@
     ],
     "toolCount": 45,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FORMBRICKS_CHECK_HEALTH",
@@ -167385,7 +167588,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FORMDESK_AUTOMATIC_LOGIN",
@@ -167539,7 +167742,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FRAUDLABS_PRO_CREATE_ACCOUNT",
@@ -168078,7 +168281,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "FRESHSERVICE_BULK_UPDATE_TICKETS",
@@ -168256,7 +168459,7 @@
     "authSchemes": [],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GAGELIST_ADD_CALIBRATION_RECORD",
@@ -168443,7 +168646,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GAN_AI_GET_AVATAR_VIDEO_INFERENCE_DETAILS",
@@ -169130,7 +169333,7 @@
     ],
     "toolCount": 2,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GEOKEO_FORWARD_GEOCODING",
@@ -169181,7 +169384,7 @@
     ],
     "toolCount": 2,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GETFORM_GET_FORM_GET_SUBMISSION",
@@ -169232,7 +169435,7 @@
     ],
     "toolCount": 22,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GETPROSPECT_APPLY_COUPON_CODE",
@@ -170879,7 +171082,7 @@
     ],
     "toolCount": 58,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GITLAB_ARCHIVE_PROJECT",
@@ -171251,7 +171454,7 @@
     ],
     "toolCount": 58,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GIVEBUTTER_ADD_CONTACT_TAGS",
@@ -171582,7 +171785,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GLADIA_DELETE_LIVE_SESSION",
@@ -171673,7 +171876,7 @@
     ],
     "toolCount": 179,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GLEAP_ARCHIVE_ALL_TICKETS",
@@ -173203,7 +173406,7 @@
     ],
     "toolCount": 36,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "GOOGLE_CHAT_CREATE_CUSTOM_EMOJI",
@@ -173426,7 +173629,7 @@
                 "type": "string",
                 "description": "Scopes to request from the user, comma separated",
                 "required": false,
-                "default": "https://www.googleapis.com/auth/chat.spaces.readonly,https://www.googleapis.com/auth/chat.spaces,https://www.googleapis.com/auth/chat.messages.readonly,https://www.googleapis.com/auth/chat.messages,https://www.googleapis.com/auth/chat.messages.create,https://www.googleapis.com/auth/chat.memberships.readonly,https://www.googleapis.com/auth/chat.memberships,https://www.googleapis.com/auth/chat.bot"
+                "default": "https://www.googleapis.com/auth/chat.spaces.readonly,https://www.googleapis.com/auth/chat.spaces,https://www.googleapis.com/auth/chat.messages.readonly,https://www.googleapis.com/auth/chat.messages,https://www.googleapis.com/auth/chat.messages.create,https://www.googleapis.com/auth/chat.memberships.readonly,https://www.googleapis.com/auth/chat.memberships"
               }
             ]
           },
@@ -173452,7 +173655,7 @@
     ],
     "toolCount": 62,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLE_CLASSROOM_COURSES_ALIASES_CREATE",
@@ -173828,7 +174031,7 @@
     ],
     "toolCount": 29,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLE_CLOUD_VISION_ANNOTATE_FILES",
@@ -174131,7 +174334,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 1,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLESLIDES_CREATE_PRESENTATION",
@@ -174243,7 +174446,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLECONTACTS_BATCH_CREATE_CONTACTS",
@@ -174429,7 +174632,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOOGLEFORMS_BATCH_UPDATE_FORM",
@@ -174545,7 +174748,7 @@
     ],
     "toolCount": 90,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GOSQUARED_ACCOUNT_ADD_SHARED_USER",
@@ -175156,7 +175359,7 @@
     ],
     "toolCount": 28,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GRAFBASE_ADD_ZITADEL_REDIRECT",
@@ -175536,7 +175739,7 @@
     ],
     "toolCount": 143,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GRIPTAPE_ASSISTANT_CREATION",
@@ -176292,7 +176495,7 @@
     ],
     "toolCount": 30,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GRIST_ADD_RECORDS",
@@ -176491,7 +176694,7 @@
     ],
     "toolCount": 7,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GROQCLOUD_CREATE_AUDIO_TRANSCRIPTION",
@@ -176708,7 +176911,7 @@
     ],
     "toolCount": 192,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "GUSTO_ADD_EMPLOYEES_TO_HOLIDAY_PAY_POLICY",
@@ -177750,7 +177953,7 @@
     ],
     "toolCount": 70,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HABITICA_ADD_CHALLENGE_TASK",
@@ -179168,7 +179371,7 @@
     ],
     "toolCount": 129,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HELP_SCOUT_CREATE_CHAT_HANDLE",
@@ -179879,7 +180082,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HELPDESK_LIST_AGENTS",
@@ -179990,7 +180193,7 @@
     ],
     "toolCount": 37,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HELPWISE_CREATE_ATTACHMENT",
@@ -180964,7 +181167,7 @@
     ],
     "toolCount": 19,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HEYREACH_ADD_LEADS_TO_LIST_V2",
@@ -181100,7 +181303,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HEYY_CREATE_ATTRIBUTE",
@@ -181206,7 +181409,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HEYZINE_CREATE_FLIPBOOK_LINK",
@@ -181317,7 +181520,7 @@
     ],
     "toolCount": 16,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HIGHERGOV_GET_AGENCIES",
@@ -181438,7 +181641,7 @@
     ],
     "toolCount": 7,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HONEYBADGER_REPORT_CHECK_IN",
@@ -181765,7 +181968,7 @@
     ],
     "toolCount": 105,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HOOKDECK_ADD_CUSTOM_DOMAIN",
@@ -182523,7 +182726,7 @@
     ],
     "toolCount": 122,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HUB_PLANNER_ADD_CLIENTS_TO_PROJECT",
@@ -183178,7 +183381,7 @@
     ],
     "toolCount": 135,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HUGGING_FACE_CHANGE_DISCUSSIONS_STATUS",
@@ -183998,7 +184201,7 @@
     ],
     "toolCount": 26,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HUNTER_ACCOUNT_INFORMATION",
@@ -184238,7 +184441,7 @@
     ],
     "toolCount": 43,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HYPERBROWSER_ADD_EXTENSION",
@@ -184494,7 +184697,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "HYPERISE_CREATE_CLIENT_ACCOUNT",
@@ -184841,7 +185044,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "IDENTITYCHECK_CHECK_API_HEALTH",
@@ -184937,7 +185140,7 @@
     ],
     "toolCount": 32,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "IGNISIGN_API_AUTHENTICATION",
@@ -185138,7 +185341,7 @@
     ],
     "toolCount": 26,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "IMAGEKIT_IO_BULK_JOB_STATUS",
@@ -185763,7 +185966,7 @@
     ],
     "toolCount": 86,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "INCIDENT_IO_CREATE_ALERT_ATTRIBUTES_V2",
@@ -186329,7 +186532,7 @@
     ],
     "toolCount": 65,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "INSIGHTO_AI_ADD_INTENT_TO_ASSISTANT",
@@ -187044,7 +187247,7 @@
     ],
     "toolCount": 117,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "INSTANTLY_ACCOUNTS_CTD_STATUS_GET",
@@ -187670,7 +187873,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "INTELLIPRINT_CANCEL_DELETE_PRINT_JOB",
@@ -187816,7 +188019,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "IP2LOCATION_BULK_IP_GEOLOCATION",
@@ -187897,7 +188100,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "IP2LOCATION_IO_BULK_IP_GEOLOCATION",
@@ -188664,7 +188867,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "JOBNIMBUS_ACCOUNT_CREATE_LOCATION",
@@ -188810,7 +189013,7 @@
     ],
     "toolCount": 18,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "JOTFORM_CLONE_FORM",
@@ -188949,7 +189152,7 @@
     ],
     "toolCount": 2,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "JUMPCLOUD_CREATE_SYSTEM",
@@ -189000,7 +189203,7 @@
     ],
     "toolCount": 77,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "KADOA_APPROVE_BULK_VALIDATION_RULES",
@@ -189642,7 +189845,7 @@
     ],
     "toolCount": 29,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "KALEIDO_ADD_IDENTITY_PROOF",
@@ -189828,7 +190031,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "KANBANIZE_ADD_CARD_COMMENT",
@@ -190092,7 +190295,7 @@
     ],
     "toolCount": 20,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "KEYWORD_ADD_KEYWORDS",
@@ -190234,7 +190437,7 @@
     ],
     "toolCount": 47,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "KIBANA_DELETE_ALERTING_RULES",
@@ -190828,7 +191031,7 @@
     ],
     "toolCount": 42,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "KIT_ADD_SUBSCRIBER_TO_FORM",
@@ -191217,7 +191420,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "KNACK_CREATE_OBJECT_RECORD",
@@ -191362,7 +191565,7 @@
     ],
     "toolCount": 7,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "KONTENT_AI_GET_CONTENT_ITEM",
@@ -191446,7 +191649,7 @@
     ],
     "toolCount": 3,
     "triggerCount": 0,
-    "version": "20260408_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "KRAKEN_IO_CHECK_USER_STATUS",
@@ -191510,7 +191713,7 @@
     ],
     "toolCount": 4,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "L2S_GET_URL_DETAILS",
@@ -191571,7 +191774,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LAGROWTHMACHINE_ADD_RB2B_VISITOR_TO_AUDIENCE",
@@ -191728,7 +191931,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LANDBOT_DELETE_BOT",
@@ -191834,7 +192037,7 @@
     ],
     "toolCount": 20,
     "triggerCount": 0,
-    "version": "20260413_01",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LANGBASE_APPEND_THREAD_MESSAGES",
@@ -191975,7 +192178,7 @@
     ],
     "toolCount": 25,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LAPOSTA_CAMPAIGN_GET_ALL",
@@ -192141,7 +192344,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LEADBOXER_ADD_OR_UPDATE_LEAD_TAGS",
@@ -192540,7 +192743,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LEIGA_CREATE_PROJECT",
@@ -192631,7 +192834,7 @@
     ],
     "toolCount": 54,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LEMLIST_CREATE_COMPANY_NOTE",
@@ -192942,7 +193145,7 @@
     ],
     "toolCount": 32,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LEMON_SQUEEZY_CREATE_CUSTOMER",
@@ -193306,7 +193509,7 @@
     ],
     "toolCount": 28,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "LINKEDIN_ADS_CREATE_AD_ACCOUNT",
@@ -193512,7 +193715,7 @@
     ],
     "toolCount": 17,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LINKLY_CREATE_OR_UPDATE_LINK",
@@ -193646,7 +193849,7 @@
     ],
     "toolCount": 16,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LISTCLEAN_CREATE_BULK_VERIFICATION_LIST",
@@ -193813,7 +194016,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LLMWHISPERER_CONVERT_DOCUMENT_TO_TEXT_V2",
@@ -193917,7 +194120,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LOB_CREATE_DOMAIN",
@@ -194024,7 +194227,7 @@
     ],
     "toolCount": 30,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LODGIFY_CREATE_CALLMEBACK_REQUEST",
@@ -194263,7 +194466,7 @@
     ],
     "toolCount": 2,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LOGO_DEV_GET_LOGO_IMAGE",
@@ -194314,7 +194517,7 @@
     ],
     "toolCount": 4,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LOOMIO_LIST_GROUPS",
@@ -194476,7 +194679,7 @@
     ],
     "toolCount": 58,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "LOYVERSE_CREATE_OR_UPDATE_CATEGORY",
@@ -194883,7 +195086,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAGNETIC_CLIENTS_GET_CURRENT_FOLLOWUPS",
@@ -194994,7 +195197,7 @@
     ],
     "toolCount": 15,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAILBLUSTER_CREATE_LEAD",
@@ -195110,7 +195313,7 @@
     ],
     "toolCount": 1,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAILBOXLAYER_CHECK_EMAIL",
@@ -195207,7 +195410,7 @@
     ],
     "toolCount": 56,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAILCOACH_ADD_CAMPAIGN",
@@ -195536,7 +195739,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAILERCLOUD_CREATE_LIST",
@@ -195819,7 +196022,7 @@
     ],
     "toolCount": 20,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAILSOFTLY_ADD_CONTACT_TO_CONTACT_LIST",
@@ -195961,7 +196164,7 @@
     ],
     "toolCount": 49,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAILTRAP_CLEAN_INBOX",
@@ -196247,7 +196450,7 @@
     ],
     "toolCount": 25,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAKE_CREATE_ORGANIZATIONS",
@@ -196421,7 +196624,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MANUS_CREATE_FILE",
@@ -196532,7 +196735,7 @@
     ],
     "toolCount": 32,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAPBOX_GEOCODE_BATCH_V6",
@@ -197008,7 +197211,7 @@
     ],
     "toolCount": 177,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MAXIO_ALLOCATE_COMPONENT",
@@ -197998,7 +198201,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MEM_CREATE_COLLECTION",
@@ -198094,7 +198297,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MEMBERSPOT_CREATE_LOGIN_TOKEN",
@@ -198200,7 +198403,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MEMBERSTACK_CREATE_MEMBER",
@@ -198350,7 +198553,7 @@
     ],
     "toolCount": 194,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "METABASE_CREATE_BOOKMARK",
@@ -199415,7 +199618,7 @@
     ],
     "toolCount": 36,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MEZMO_CREATE_CATEGORY",
@@ -199702,7 +199905,7 @@
     ],
     "toolCount": 40,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MISSIVE_CREATE_ANALYTICS_REPORT",
@@ -199943,7 +200146,7 @@
     ],
     "toolCount": 54,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MISTRAL_AI_APPEND_TO_CONVERSATION",
@@ -200254,7 +200457,7 @@
     ],
     "toolCount": 94,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MIXMAX_ADD_CONTACT_TO_GROUP",
@@ -200765,7 +200968,7 @@
     ],
     "toolCount": 218,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MOCO_ACTIVATE_OFFER_CUSTOMER_APPROVAL",
@@ -202264,7 +202467,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MONEYBIRD_ADD_NOTE_TO_CONTACT",
@@ -202532,7 +202735,7 @@
     ],
     "toolCount": 31,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MOOSEND_ADD_SEGMENT_CRITERIA",
@@ -202728,7 +202931,7 @@
     ],
     "toolCount": 27,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MOTION_ADD_CUSTOM_FIELD_TO_PROJECT",
@@ -202904,7 +203107,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MSG91_CREATE_USER_EVENTS",
@@ -203214,7 +203417,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260410_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "MX_TOOLBOX_LOOKUP_BIMI_RECORD",
@@ -203320,7 +203523,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NANGO_ACTION_TRIGGER_POST",
@@ -203577,7 +203780,7 @@
     ],
     "toolCount": 136,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NASA_BROWSE_NEO",
@@ -204298,7 +204501,7 @@
     ],
     "toolCount": 7,
     "triggerCount": 0,
-    "version": "20260410_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NASDAQ_GET_ANALYST_RATINGS",
@@ -204374,7 +204577,7 @@
     ],
     "toolCount": 16,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NEEDLE_ADD_FILES_TO_COLLECTION",
@@ -204650,7 +204853,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NEUTRINO_ADD_WATERMARK_TO_IMAGE",
@@ -204819,7 +205022,7 @@
     ],
     "toolCount": 12,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NEVERBOUNCE_ACCOUNT_INFO",
@@ -204920,7 +205123,7 @@
     ],
     "toolCount": 159,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NEW_RELIC_ADD_NOTIFICATION_CHANNELS_TO_POLICY",
@@ -206292,7 +206495,7 @@
     ],
     "toolCount": 4,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NINOX_DELETE_RECORD",
@@ -206354,7 +206557,7 @@
     ],
     "toolCount": 28,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NOCODB_AUTH_ME",
@@ -206543,7 +206746,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NOCRM_IO_ADD_A_TAG_TO_A_LEAD",
@@ -206637,7 +206840,7 @@
     ],
     "toolCount": 20,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NORTHFLANK_CREATE_OR_UPDATE_PROJECT",
@@ -206778,7 +206981,7 @@
     ],
     "toolCount": 48,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NOZBE_TEAMS_CREATE_ATTACHMENT",
@@ -207059,7 +207262,7 @@
     ],
     "toolCount": 12,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NPM_DELETE_USER_TOKEN_LEGACY",
@@ -207161,7 +207364,7 @@
     ],
     "toolCount": 12,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NTFY_CREATE_ACCOUNT",
@@ -207301,7 +207504,7 @@
     ],
     "toolCount": 29,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NUSII_PROPOSALS_ARCHIVE_PROPOSAL",
@@ -207487,7 +207690,7 @@
     ],
     "toolCount": 78,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "NUTSHELL_CREATE_ACCOUNTS",
@@ -208159,7 +208362,7 @@
     ],
     "toolCount": 17,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "OKSIGN_BRIEFCASE_REMOVE",
@@ -208683,7 +208886,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ONEDESK_CREATE_WORKLOG",
@@ -208844,7 +209047,7 @@
     ],
     "toolCount": 15,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ONESIGNAL_REST_API_BEGIN_LIVE_ACTIVITY",
@@ -208960,7 +209163,7 @@
     ],
     "toolCount": 12,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ONESIGNAL_USER_AUTH_CREATE_USER",
@@ -209061,7 +209264,7 @@
     ],
     "toolCount": 126,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "OPENAI_ADD_UPLOAD_PART",
@@ -210211,7 +210414,7 @@
     ],
     "toolCount": 17,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "OPTIMOROUTE_CREATE_ORDER",
@@ -210993,7 +211196,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PAPERFORM_GET_SPACE",
@@ -211059,7 +211262,7 @@
     ],
     "toolCount": 69,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PARADYM_ACTIVATE_CERTIFICATE",
@@ -211445,7 +211648,7 @@
     ],
     "toolCount": 32,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PARALLEL_ADD_ENRICHMENT_TO_FIND_ALL_RUN",
@@ -211647,7 +211850,7 @@
     ],
     "toolCount": 23,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PARMA_ADD_RELATIONSHIP_TO_GROUP",
@@ -211897,7 +212100,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PARSERA_CREATE_SCRAPER",
@@ -212003,7 +212206,7 @@
     ],
     "toolCount": 26,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PARSEUR_COPY_DOCUMENT",
@@ -212174,7 +212377,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PARSIO_IO_CREATE_HTML_TEXT_DOCUMENT",
@@ -212431,7 +212634,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PASSSLOT_CREATE_SCANNER",
@@ -212512,7 +212715,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PAYHERE_CREATE_HOOK",
@@ -212626,7 +212829,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PAYHIP_CREATE_COUPON",
@@ -212712,7 +212915,7 @@
     ],
     "toolCount": 112,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PAYSTACK_ADD_PRODUCTS_TO_PAGE",
@@ -213359,7 +213562,7 @@
     ],
     "toolCount": 35,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PDF_CO_ACCOUNT_BALANCE_INFO",
@@ -213454,7 +213657,7 @@
       {
         "slug": "PDF_CO_PDF_FROM_DOCUMENT_TXT",
         "name": "Convert Text to PDF",
-        "description": "Tool to convert plain text data to PDF. Use when you need to generate a PDF from raw text content or text file links."
+        "description": "Tool to convert a plain text (.txt) file to PDF. Use when you have a public URL to a text file; raw inline text is not accepted by the endpoint."
       },
       {
         "slug": "PDF_CO_PDF_FROM_EMAIL",
@@ -213818,7 +214021,7 @@
     ],
     "toolCount": 90,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PENPOT_CREATE_ACCESS_TOKEN",
@@ -214317,7 +214520,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PERIGON_GET_ARTICLES",
@@ -214403,7 +214606,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PERSISTIQ_ADD_LEAD_TO_CAMPAIGN",
@@ -214514,7 +214717,7 @@
     ],
     "toolCount": 69,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PERSONA_ADD_TAG_TO_ACCOUNT",
@@ -214900,7 +215103,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PEXELS_COLLECTION_MEDIA",
@@ -214986,7 +215189,7 @@
     ],
     "toolCount": 53,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PHANTOMBUSTER_ABORT_AGENT_V1",
@@ -215393,7 +215596,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260410_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PILVIO_CHECK_ACTIVE_CAMPAIGNS",
@@ -215485,7 +215688,7 @@
     ],
     "toolCount": 48,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "PINECONE_CANCEL_BULK_IMPORT",
@@ -215814,7 +216017,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PINGDOM_GET_ACTIONS_ALERTS",
@@ -215920,7 +216123,7 @@
     ],
     "toolCount": 15,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PIPELINE_CRM_CREATE_COMPANY",
@@ -216044,7 +216247,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PLACID_CREATE_COLLECTION",
@@ -216412,7 +216615,7 @@
     ],
     "toolCount": 7,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PLANYO_ONLINE_BOOKING_ADD_RESERVATION",
@@ -216593,7 +216796,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "PLAUSIBLE_ANALYTICS_CHECK_HEALTH",
@@ -217825,7 +218028,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "POSTALYTICS_ADD_ACCOUNT",
@@ -217986,7 +218189,7 @@
     ],
     "toolCount": 60,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "POSTGRID_CANCEL_BOX",
@@ -218514,7 +218717,7 @@
     ],
     "toolCount": 135,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "POSTMAN_CREATE_A_COLLECTION",
@@ -219230,7 +219433,7 @@
     ],
     "toolCount": 46,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "POSTMARK_ARCHIVE_MESSAGE_STREAM",
@@ -219652,7 +219855,7 @@
     ],
     "toolCount": 22,
     "triggerCount": 0,
-    "version": "20260413_01",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PRISMA_CREATE_CONNECTION",
@@ -219925,7 +220128,7 @@
     ],
     "toolCount": 64,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PROABONO_ANONYMIZE_CUSTOMER",
@@ -220412,7 +220615,7 @@
     ],
     "toolCount": 39,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PRODUCTLANE_CREATE_CHANGELOG",
@@ -220712,7 +220915,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PROMPTMATE_IO_CREATE_WEBHOOK",
@@ -220864,7 +221067,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PROXIEDMAIL_CREATE_WEBHOOK_RECEIVER",
@@ -220930,7 +221133,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PUSH_BY_TECHULUS_DELETE_TEAM_MEMBER_OR_INVITE",
@@ -221005,7 +221208,7 @@
     ],
     "toolCount": 15,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PUSHBULLET_CREATE_CHAT",
@@ -221169,7 +221372,7 @@
     ],
     "toolCount": 29,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "PUSHOVER_CANCEL_RECEIPT_RETRIES",
@@ -221363,7 +221566,7 @@
     ],
     "toolCount": 76,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "QUADERNO_ADD_EXPENSE_PAYMENT",
@@ -221795,7 +221998,7 @@
     ],
     "toolCount": 105,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "QUICKBOOKS_CAPTURE_CHARGE",
@@ -222420,7 +222623,7 @@
     ],
     "toolCount": 37,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RADAR_AUTOCOMPLETE_ADDRESS_OR_PLACE",
@@ -222646,7 +222849,7 @@
     ],
     "toolCount": 7,
     "triggerCount": 0,
-    "version": "20260410_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RAGIC_DELETE_ENTRY",
@@ -222730,7 +222933,7 @@
     ],
     "toolCount": 31,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RAGIE_CREATE_DOCUMENT",
@@ -222926,7 +223129,7 @@
     ],
     "toolCount": 61,
     "triggerCount": 0,
-    "version": "20260415_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RAISELY_CHECK_PROFILE_URL",
@@ -223272,7 +223475,7 @@
     ],
     "toolCount": 88,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RAMP_CREATE_DEPARTMENT",
@@ -223971,7 +224174,7 @@
     ],
     "toolCount": 42,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RAZORPAY_CANCEL_INVOICE",
@@ -224345,7 +224548,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "REALPHONEVALIDATION_CHECK_FRAUD",
@@ -224437,7 +224640,7 @@
     ],
     "toolCount": 23,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RECRUITEE_CREATE_CANDIDATE",
@@ -224658,7 +224861,7 @@
     ],
     "toolCount": 32,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "REDCIRCLE_API_ADD_ZIPCODES",
@@ -224862,7 +225065,7 @@
     ],
     "toolCount": 83,
     "triggerCount": 0,
-    "version": "20260413_01",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "REDDIT_ADS_CREATE_AD_GROUP",
@@ -225351,7 +225554,7 @@
     ],
     "toolCount": 33,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "REFERRALROCK_DELETE_EMAIL_REMOVEUNSUBSCRIBE",
@@ -225565,7 +225768,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "REFINER_DELETE_CONTACT",
@@ -225806,7 +226009,7 @@
     ],
     "toolCount": 3,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "REMOVE_BG",
@@ -225862,7 +226065,7 @@
     ],
     "toolCount": 95,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RENDER_ADD_HEADERS",
@@ -226454,7 +226657,7 @@
     ],
     "toolCount": 130,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RENTMAN_DELETE_APPOINTMENT",
@@ -227145,7 +227348,7 @@
     ],
     "toolCount": 147,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "REPAIRSHOPR_ADD_ESTIMATE_LINE_ITEM",
@@ -227929,7 +228132,7 @@
     ],
     "toolCount": 31,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "REPLICATE_ACCOUNT_GET",
@@ -228125,7 +228328,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "REPLY_CREATE_LIST",
@@ -228271,7 +228474,7 @@
     ],
     "toolCount": 33,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "REPLY_IO_ADD_CONTACT_TO_SEQUENCE",
@@ -228477,7 +228680,7 @@
     ],
     "toolCount": 62,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RESEND_ADD_CONTACT_TO_SEGMENT",
@@ -228828,7 +229031,7 @@
     ],
     "toolCount": 7,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RESPOND_IO_CREATE_COMMENT",
@@ -228975,7 +229178,7 @@
     ],
     "toolCount": 15,
     "triggerCount": 0,
-    "version": "20260413_01",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RETENTLY_ADD_FEEDBACK_TAGS",
@@ -229416,7 +229619,7 @@
     ],
     "toolCount": 26,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "REVOLT_ACKNOWLEDGE_POLICY_CHANGES",
@@ -229698,7 +229901,7 @@
     ],
     "toolCount": 8,
     "triggerCount": 0,
-    "version": "20260415_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RIZE_CREATE_API_KEY",
@@ -229944,7 +230147,7 @@
     ],
     "toolCount": 39,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ROAM_ADD_GROUP_MEMBERS",
@@ -230304,7 +230507,7 @@
     ],
     "toolCount": 17,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ROCKETADMIN_CHECK_API_KEY",
@@ -230430,7 +230633,7 @@
     ],
     "toolCount": 17,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ROLLBAR_CHECK_TEAM_PROJECT_ASSIGNMENT",
@@ -230556,7 +230759,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ROOTLY_DELETE_ACTION_ITEM",
@@ -230683,7 +230886,7 @@
     ],
     "toolCount": 97,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "ROUTE4ME_ADD_ORDER_CUSTOM_FIELD",
@@ -231326,7 +231529,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "RUNPOD_CREATE_CLUSTER",
@@ -231432,7 +231635,7 @@
     ],
     "toolCount": 255,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SAFETYCULTURE_ADD_FILE_OWNERS_BULK",
@@ -232748,7 +232951,7 @@
     ],
     "toolCount": 63,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SALESFLARE_ADD_ACCOUNT_CONTACTS",
@@ -233104,7 +233307,7 @@
     ],
     "toolCount": 25,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SALESFORCE_SERVICE_CLOUD_AGENT_SENSITIVE_DATA_RULE_TRIGGERED",
@@ -233312,7 +233515,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SALESMATE_ADD_PRODUCT",
@@ -233391,7 +233594,7 @@
     ],
     "toolCount": 16,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SANITY_ADD_DEFAULT_ROLE_TO_USERS",
@@ -233930,7 +234133,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SATISMETER_EMBED_SURVEY",
@@ -234091,7 +234294,7 @@
     ],
     "toolCount": 40,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SCALE_AI_ADD_STUDIO_ASSIGNMENTS",
@@ -234557,7 +234760,7 @@
     ],
     "toolCount": 16,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SCRAPE_DO_CANCEL_ASYNC_JOB",
@@ -235219,7 +235422,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "SEAT_GEEK_GET_EVENT_DETAILS",
@@ -235301,7 +235504,7 @@
     ],
     "toolCount": 12,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "SECURITYTRAILS_BULK_STATIC_ASSET_RULES",
@@ -235536,7 +235739,7 @@
     ],
     "toolCount": 3,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SEGMETRICS_CREATE_PRODUCT",
@@ -235600,7 +235803,7 @@
     ],
     "toolCount": 37,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SENDBIRD_ADD_MEMBERS_GROUP_CHANNEL",
@@ -235834,7 +236037,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SENDBIRD_AI_CHABOT_CREATE_BOT",
@@ -235994,7 +236197,7 @@
     ],
     "toolCount": 17,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SENDFOX_DELETE_CONTACT_FROM_LIST",
@@ -236120,7 +236323,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SENDLANE_GET_CAMPAIGNS",
@@ -236192,7 +236395,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SENDLOOP_GET_ACCOUNT_INFO",
@@ -236306,7 +236509,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SENDSPARK_ADD_MULTIPLE_PROSPECTS_TO_DYNAMIC_CAMPAIGN",
@@ -236446,7 +236649,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SEQERA_CREATE_WAVE_CONTAINER",
@@ -236603,7 +236806,7 @@
     ],
     "toolCount": 18,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SERPHOUSE_ACCOUNT_INFO",
@@ -236790,7 +236993,7 @@
     ],
     "toolCount": 17,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SERVERAVATAR_DESTROY_BACKUPS",
@@ -236916,7 +237119,7 @@
     ],
     "toolCount": 115,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SEVDESK_BOOK_INVOICE_AMOUNT",
@@ -238573,7 +238776,7 @@
     ],
     "toolCount": 41,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SHORT_IO_ADD_TAG_TO_LINKS_BULK",
@@ -238875,7 +239078,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SHORTEN_REST_CREATE_ALIAS",
@@ -239047,7 +239250,7 @@
     ],
     "toolCount": 24,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SHOTSTACK_CREATE_TEMPLATE",
@@ -239272,7 +239475,7 @@
     ],
     "toolCount": 9,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SIGNATURELY_CREATE_FOLDER",
@@ -239589,7 +239792,7 @@
     ],
     "toolCount": 141,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SIMLA_COM_ADD_CUSTOMER_INTERACTION_FAVORITE",
@@ -240412,7 +240615,7 @@
     ],
     "toolCount": 51,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SIMPLEKPI_ADD_USER_GROUP_ITEM",
@@ -240740,7 +240943,7 @@
     ],
     "toolCount": 19,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SIMPLERO_ADD_TAG_TO_CONTACT",
@@ -241179,7 +241382,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SMARTPROXY_DELETE_WHITELISTED_IP",
@@ -241250,7 +241453,7 @@
     ],
     "toolCount": 23,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SMS_ALERT_CHANGE_PASSWORD",
@@ -241406,7 +241609,7 @@
     ],
     "toolCount": 32,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SMTP2GO_ACTIVITY_SEARCH",
@@ -241607,7 +241810,7 @@
     ],
     "toolCount": 139,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SNAPCHAT_ADD_SEGMENT_USERS",
@@ -242455,7 +242658,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "SOFTR_CREATE_DATABASE",
@@ -242904,7 +243107,7 @@
     ],
     "toolCount": 27,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SPLITWISE_ADD_FRIEND",
@@ -243128,7 +243331,7 @@
     ],
     "toolCount": 57,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SPOKI_ADD_CONTACT_OPERATOR",
@@ -243454,7 +243657,7 @@
     ],
     "toolCount": 21,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SPONDYR_CONDITIONS_LIST",
@@ -244130,7 +244333,7 @@
     ],
     "toolCount": 12,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SPOTLIGHTR_ADD_DOMAIN",
@@ -244677,7 +244880,7 @@
     ],
     "toolCount": 6,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "STARTON_DELETE_SMART_CONTRACT_EVENT",
@@ -245054,7 +245257,7 @@
     ],
     "toolCount": 41,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "STORMBOARD_ACCEPT_A_STORM_INVITE",
@@ -245532,7 +245735,7 @@
     ],
     "toolCount": 33,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "STRAVA_CREATE_AN_ACTIVITY",
@@ -245763,7 +245966,7 @@
     ],
     "toolCount": 4,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "STREAMTIME_LIST_ROLES",
@@ -245824,7 +246027,7 @@
     ],
     "toolCount": 57,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "STUDIO_BY_AI21_LABS_CHECK_CAN_IFRAME",
@@ -246462,7 +246665,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SUPERSAAS_CREATE_USER",
@@ -246592,7 +246795,7 @@
     ],
     "toolCount": 41,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SUPPORTBEE_ADD_LABEL_TO_TICKET",
@@ -247143,7 +247346,7 @@
     ],
     "toolCount": 44,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SWAGGERHUB_ADD_ACCESS_CONTROL_FOR_TEAMS",
@@ -247404,7 +247607,7 @@
     ],
     "toolCount": 91,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SWARMSYNCAI_ANNOUNCE_AGENT",
@@ -247946,7 +248149,7 @@
     ],
     "toolCount": 79,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "SYNTHFLOW_AI_ADD_KB_SOURCE_DOCUMENT",
@@ -248727,7 +248930,7 @@
     ],
     "toolCount": 40,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TAPFILIATE_AFFILIATES_RETRIEVE_AN_AFFILIATE",
@@ -248968,7 +249171,7 @@
     ],
     "toolCount": 129,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "TAVE_APPLY_PAYMENT_TO_ORDER",
@@ -249890,7 +250093,7 @@
     ],
     "toolCount": 14,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TEAMCAMP_CREATE_PROJECT",
@@ -250001,7 +250204,7 @@
     ],
     "toolCount": 18,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "TELEGRAM_ANSWER_CALLBACK_QUERY",
@@ -250132,7 +250335,7 @@
     ],
     "toolCount": 30,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TELNYX_CREATE_NETWORK",
@@ -250323,7 +250526,7 @@
     ],
     "toolCount": 26,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TELTEL_CREATE_AUTODIALER_CUSTOM_STATUS",
@@ -250494,7 +250697,7 @@
     ],
     "toolCount": 30,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TEMPLATED_ADD_TAGS_TO_TEMPLATE",
@@ -250803,7 +251006,7 @@
     ],
     "toolCount": 31,
     "triggerCount": 0,
-    "version": "20260413_01",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TEXTIT_CREATE_CAMPAIGN",
@@ -250999,7 +251202,7 @@
     ],
     "toolCount": 29,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "THANKS_IO_ADD_RECIPIENT_TO_MAILING_LIST",
@@ -251573,7 +251776,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TIDY_CREATE_ADDRESS",
@@ -251780,7 +251983,7 @@
     ],
     "toolCount": 13,
     "triggerCount": 1,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TIMELINESAI_DELETE_FILE",
@@ -252119,7 +252322,7 @@
     ],
     "toolCount": 56,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TOGGL_CREATE_CLIENT",
@@ -252506,7 +252709,7 @@
     ],
     "toolCount": 10,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TOMBA_ATTRIBUTES_LIST",
@@ -252605,7 +252808,7 @@
     ],
     "toolCount": 82,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TOMTOM_ASSETS_LIST_FONTS",
@@ -253244,7 +253447,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260407_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TRIPADVISOR_CONTENT_API_GET_LOCATION_DETAILS",
@@ -253310,7 +253513,7 @@
     ],
     "toolCount": 15,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TRUVERA_CREATE_API_KEY",
@@ -253434,7 +253637,7 @@
     ],
     "toolCount": 170,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TURBOT_PIPES_ACTOR_GET",
@@ -254381,7 +254584,7 @@
     ],
     "toolCount": 97,
     "triggerCount": 0,
-    "version": "20260410_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "TWELVE_DATA_CASH_FLOW",
@@ -254907,7 +255110,7 @@
     ],
     "toolCount": 5,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TWOCAPTCHA_CREATE_TASK",
@@ -254976,7 +255179,7 @@
     ],
     "toolCount": 35,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "TYPEFORM_CREATE_ACCOUNT_WORKSPACE",
@@ -255273,7 +255476,7 @@
     ],
     "toolCount": 3,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "U301_DELETE_LINK",
@@ -255329,7 +255532,7 @@
     ],
     "toolCount": 32,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "UNIONE_DELETE_EVENT_DUMP",
@@ -255538,7 +255741,7 @@
     ],
     "toolCount": 33,
     "triggerCount": 0,
-    "version": "20260413_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "UNISENDER_CHECK_EMAIL",
@@ -255886,7 +256089,7 @@
     ],
     "toolCount": 34,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "UPLOADCARE_CHECK_AWS_REKOGNITION_MODERATION_STATUS",
@@ -256105,7 +256308,7 @@
     ],
     "toolCount": 15,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "UPTIMEROBOT_ADD_MONITOR",
@@ -256221,7 +256424,7 @@
     ],
     "toolCount": 18,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "USERFLOW_CREATE_OR_UPDATE_A_GROUP",
@@ -256403,7 +256606,7 @@
     ],
     "toolCount": 44,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "V0_ASSIGN_CHAT_TO_PROJECT",
@@ -256664,7 +256867,7 @@
     ],
     "toolCount": 38,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "VAPI_ASSISTANT_CONTROLLER_UPDATE",
@@ -256895,7 +257098,7 @@
     ],
     "toolCount": 11,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "VECTORSHIFT_CREATE_CHATBOT",
@@ -257057,7 +257260,7 @@
     ],
     "toolCount": 146,
     "triggerCount": 0,
-    "version": "20260417_00",
+    "version": "20260424_00",
     "tools": [
       {
         "slug": "VERCEL_ADD_ENVIRONMENT_VARIABLE",
@@ -258025,7 +258228,7 @@
     ],
     "toolCount": 16,
     "triggerCount": 0,
-    "version": "20260414_00",
+    "version": "20260422_01",
     "tools": [
       {
         "slug": "VIRUSTOTAL_ADD_COMMENT",

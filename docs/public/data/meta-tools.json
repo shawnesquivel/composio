@@ -15,7 +15,7 @@
     "inputParameters": {
       "properties": {
         "tool_slugs": {
-          "description": "Array of tool slugs to retrieve schemas for. Pass slugs exactly as returned by COMPOSIO_SEARCH_TOOLS.",
+          "description": "Array of tool slugs to retrieve schemas for. Pass valid tool slugs; never invent.",
           "examples": [
             [
               "GMAIL_SEND_EMAIL",
@@ -30,7 +30,7 @@
           "title": "Tool Slugs"
         },
         "session_id": {
-          "description": "ALWAYS pass the session_id that was provided in the SEARCH_TOOLS response.",
+          "description": "Pass the session_id if you received one from a prior COMPOSIO_SEARCH_TOOLS call.",
           "title": "Session ID",
           "type": "string"
         },
@@ -161,7 +161,7 @@
     "slug": "COMPOSIO_MANAGE_CONNECTIONS",
     "name": "manage_connections",
     "displayName": "Manage Connections",
-    "description": "\nCreate or manage connections to user's apps. Returns a branded authentication link that works for OAuth, API keys, and all other auth types.\n\nCall policy:\n- First call COMPOSIO_SEARCH_TOOLS for the user's query.\n- If COMPOSIO_SEARCH_TOOLS indicates there is no active connection for a toolkit, call COMPOSIO_MANAGE_CONNECTIONS with the exact toolkit name(s) returned.\n- Do not call COMPOSIO_MANAGE_CONNECTIONS if COMPOSIO_SEARCH_TOOLS returns no main tools and no related tools.\n- Toolkit names in toolkits must exactly match toolkit identifiers returned by COMPOSIO_SEARCH_TOOLS; never invent names.\n- NEVER execute any toolkit tool without an ACTIVE connection.\n\nTool Behavior:\n- If a connection is Active, the tool returns the connection details. Always use this to verify connection status and fetch metadata.\n- If a connection is not Active, returns a authentication link (redirect_url) to create new connection.\n- If reinitiate_all is true, the tool forces reconnections for all toolkits, even if they already have active connections.\n\nWorkflow after initiating connection:\n- Always show the returned redirect_url as a FORMATTED MARKDOWN LINK to the user, and ask them to click on the link to finish authentication.\n- Begin executing tools only after the connection for that toolkit is confirmed Active.\n    ",
+    "description": "\nCreate or manage connections to user's apps. Returns a branded authentication link that works for OAuth, API keys, and all other auth types.\n\nCall policy:\n- First call COMPOSIO_SEARCH_TOOLS for the user's query.\n- If COMPOSIO_SEARCH_TOOLS indicates there is no active connection for a toolkit, call COMPOSIO_MANAGE_CONNECTIONS with the exact toolkit name(s) returned.\n- Do not call COMPOSIO_MANAGE_CONNECTIONS if COMPOSIO_SEARCH_TOOLS returns no main tools and no related tools.\n- Toolkit names in toolkits must exactly match toolkit slugs returned by COMPOSIO_SEARCH_TOOLS; never invent names.\n- NEVER execute any toolkit tool without an ACTIVE connection.\n\nTool Behavior:\n- If a connection is Active, the tool returns the connection details. Always use this to verify connection status and fetch metadata.\n- If a connection is not Active, returns a authentication link (redirect_url) to create new connection.\n- If reinitiate_all is true, the tool forces reconnections for all toolkits, even if they already have active connections.\n\nWorkflow after initiating connection:\n- Always show the returned redirect_url as a FORMATTED MARKDOWN LINK to the user, and ask them to click on the link to finish authentication.\n- Begin executing tools only after the connection for that toolkit is confirmed Active.\n    ",
     "tags": [
       "openWorldHint"
     ],
@@ -173,7 +173,7 @@
     "inputParameters": {
       "properties": {
         "toolkits": {
-          "description": "List of toolkits to check or connect. Should be a valid toolkit returned by SEARCH_TOOLS (never invent one). If a toolkit is not connected, will initiate connection. Example: ['gmail', 'exa', 'github', 'outlook', 'reddit', 'googlesheets', 'one_drive']",
+          "description": "List of toolkits to check or connect. Must be a valid toolkit slug (never invent one). If a toolkit is not connected, will initiate connection. Example: ['gmail', 'exa', 'github', 'outlook', 'reddit', 'googlesheets', 'one_drive']",
           "items": {
             "properties": {},
             "type": "string"
@@ -188,7 +188,7 @@
           "type": "boolean"
         },
         "session_id": {
-          "description": "ALWAYS pass the session_id that was provided in the SEARCH_TOOLS response.",
+          "description": "Pass the session_id if you received one from a prior COMPOSIO_SEARCH_TOOLS call.",
           "title": "Session ID",
           "type": "string"
         }
@@ -417,7 +417,7 @@
     "slug": "COMPOSIO_MULTI_EXECUTE_TOOL",
     "name": "multi_execute_tool",
     "displayName": "Multi Execute Tool",
-    "description": "\n  Fast and parallel tool executor for tools and recipes discovered through COMPOSIO_SEARCH_TOOLS. Use this tool to execute up to 50 tools in parallel across apps only when they're logically independent (no ordering/output dependencies). Response contains structured outputs ready for immediate analysis - avoid reprocessing them via remote bash/workbench tools.\n\nPrerequisites:\n- Always use valid tool slugs and their arguments discovered through COMPOSIO_SEARCH_TOOLS. NEVER invent tool slugs or argument fields. ALWAYS pass STRICTLY schema-compliant arguments with each tool execution.\n- Ensure an ACTIVE connection exists for the toolkits that are going to be executed. If none exists, MUST initiate one via COMPOSIO_MANAGE_CONNECTIONS before execution.\n- Only batch tools that are logically independent - no ordering, no output-to-input dependencies, and no intra-call chaining (tools in one call can't use each other's outputs). DO NOT pass dummy or placeholder inputs; always resolve required inputs using appropriate tools first.\n\nUsage guidelines:\n- Use this whenever a tool is discovered and has to be called, either as part of a multi-step workflow or as a standalone tool.\n- If COMPOSIO_SEARCH_TOOLS returns a tool that can perform the task, prefer calling it via this executor. Do not write custom API calls or ad-hoc scripts for tasks that can be completed by available Composio tools.\n- Prefer parallel execution: group independent tools into a single multi-execute call where possible.\n- Predictively set sync_response_to_workbench=true if the response may be large or needed for later scripting. It still shows response inline; if the actual response data turns out small and easy to handle, keep everything inline and SKIP workbench usage.\n- Responses contain structured outputs for each tool. RULE: Small data - process yourself inline; large data - process in the workbench.\n- ALWAYS include inline references/links to sources in MARKDOWN format directly next to the relevant text. Eg provide slack thread links alongside with summary, render document links instead of raw IDs.\n\nRestrictions: Some tools or toolkits may be disabled in this environment. If the response indicates a restriction, inform the user and STOP execution immediately. Do NOT attempt workarounds or speculative actions.\n\n\n",
+    "description": "\n  Fast and parallel tool executor for tools and recipes discovered through COMPOSIO_SEARCH_TOOLS. Use this tool to execute up to 50 tools in parallel across apps only when they're logically independent (no ordering/output dependencies). Response contains structured outputs ready for immediate analysis - avoid reprocessing them via remote bash/workbench tools.\n\nPrerequisites:\n- Always use valid tool slugs and their arguments. NEVER invent tool slugs or argument fields. ALWAYS pass STRICTLY schema-compliant arguments with each tool execution.\n- Ensure an ACTIVE connection exists for the toolkits that are going to be executed. If none exists, MUST initiate one via COMPOSIO_MANAGE_CONNECTIONS before execution.\n- Only batch tools that are logically independent - no ordering, no output-to-input dependencies, and no intra-call chaining (tools in one call can't use each other's outputs). DO NOT pass dummy or placeholder inputs; always resolve required inputs using appropriate tools first.\n\nUsage guidelines:\n- Use this whenever a tool is discovered and has to be called, either as part of a multi-step workflow or as a standalone tool.\n- If COMPOSIO_SEARCH_TOOLS returns a tool that can perform the task, prefer calling it via this executor. Do not write custom API calls or ad-hoc scripts for tasks that can be completed by available Composio tools.\n- Prefer parallel execution: group independent tools into a single multi-execute call where possible.\n- Predictively set sync_response_to_workbench=true if the response may be large or needed for later scripting. It still shows response inline; if the actual response data turns out small and easy to handle, keep everything inline and SKIP workbench usage.\n- Responses contain structured outputs for each tool. RULE: Small data - process yourself inline; large data - process in the workbench.\n- ALWAYS include inline references/links to sources in MARKDOWN format directly next to the relevant text. Eg provide slack thread links alongside with summary, render document links instead of raw IDs.\n\nRestrictions: Some tools or toolkits may be disabled in this environment. If the response indicates a restriction, inform the user and STOP execution immediately. Do NOT attempt workarounds or speculative actions.\n\n\n",
     "tags": [
       "openWorldHint",
       "destructiveHint",
@@ -435,7 +435,7 @@
           "items": {
             "properties": {
               "tool_slug": {
-                "description": "The slug of the tool to execute - must be a valid slug from SEARCH_TOOLS response.",
+                "description": "The slug of the tool to execute — must be a valid tool slug; never invent.",
                 "examples": [
                   "GMAIL_SEND_EMAIL",
                   "SLACK_SEND_MESSAGE",
@@ -447,7 +447,7 @@
               },
               "arguments": {
                 "additionalProperties": true,
-                "description": "The arguments to pass to the tool. The argument schema is defined in the SEARCH_TOOLS response. Use exact field names and types; do not diverge from returned schemas.",
+                "description": "The arguments to pass to the tool. Use exact field names and types; do not diverge from the tool's argument schema.",
                 "examples": [
                   {
                     "body": "This is a test",
@@ -493,7 +493,7 @@
           "type": "boolean"
         },
         "session_id": {
-          "description": "ALWAYS pass the session_id that was provided in the SEARCH_TOOLS response.",
+          "description": "Pass the session_id if you received one from a prior COMPOSIO_SEARCH_TOOLS call.",
           "title": "Session ID",
           "type": "string"
         },
@@ -689,7 +689,7 @@
           "type": "string"
         },
         "session_id": {
-          "description": "ALWAYS pass the session_id that was provided in the SEARCH_TOOLS response.",
+          "description": "Pass the session_id if you received one from a prior COMPOSIO_SEARCH_TOOLS call.",
           "title": "Session ID",
           "type": "string"
         }
@@ -822,7 +822,7 @@
           "type": "string"
         },
         "session_id": {
-          "description": "ALWAYS pass the session_id that was provided in the SEARCH_TOOLS response.",
+          "description": "Pass the session_id if you received one from a prior COMPOSIO_SEARCH_TOOLS call.",
           "title": "Session ID",
           "type": "string"
         },
@@ -942,7 +942,7 @@
     "slug": "COMPOSIO_SEARCH_TOOLS",
     "name": "search_tools",
     "displayName": "Search Tools",
-    "description": "\n  MCP Server Info: COMPOSIO MCP connects 500+ apps—Slack, GitHub, Notion, Google Workspace (Gmail, Sheets, Drive, Calendar), Microsoft (Outlook, Teams), X/Twitter, Figma, Web Search / Deep research, Browser tool (scrape URLs, browser automation), Meta apps (Instagram, Meta Ads), TikTok, AI tools like Nano Banana & Veo3, and more—for seamless cross-app automation.\n  Use this MCP server to discover the right tools and the recommended step-by-step plan to execute reliably.\n  ALWAYS call this tool first whenever a user mentions or implies an external app, service, or workflow—never say \"I don't have access to X/Y app\" before calling it.\n\n  Tool Info: Extremely fast discovery tool that returns relevant MCP-callable tools along with a recommended execution plan and common pitfalls for reliable execution.\n\nUsage guidelines:\n  - Use this tool whenever kicking off a task. Re-run it when you need additional tools/plans due to missing details, errors, or a changed use case.\n  - If the user pivots to a different use case in same chat, you MUST call this tool again with the new use case and generate a new session_id.\n  - Specify the use_case with a normalized description of the problem, query, or task. Be clear and precise. Queries can be simple single-app actions or multiple linked queries for complex cross-app workflows.\n  - Pass known_fields along with use_case as a string of key–value hints (for example, \"channel_name: general\") to help the search resolve missing details such as IDs.\n  \n\nSplitting guidelines (Important):\n  1. Atomic queries: 1 query = 1 tool call. Include hidden prerequisites (e.g., add \"get Linear issue\" before \"update Linear issue\").\n  2. Include app names: If user names a toolkit, include it in every sub query so intent stays scoped (e.g., \"fetch Gmail emails\", \"reply to Gmail email\").\n  3. English input: Translate non-English prompts while preserving intent and identifiers.\n\n  Example:\n  User query: \"send an email to John welcoming him and create a meeting invite for tomorrow\"\n  Search call: queries: [\n    {use_case: \"send an email to someone\", known_fields: \"recipient_name: John\"},\n    {use_case: \"create a meeting invite\", known_fields: \"meeting_date: tomorrow\"}\n  ]\n\nPlan review checklist (Important):\n  - The response includes a detailed execution plan and common pitfalls. You MUST review this plan carefully, adapt it to your current context, and generate your own final step-by-step plan before execution. Execute the steps in order to ensure reliable and accurate execution. Skipping or ignoring required steps can lead to unexpected failures.\n  - Check the plan and pitfalls for input parameter nuances (required fields, IDs, formats, limits). Before executing any tool, you MUST review its COMPLETE input schema and provide STRICTLY schema-compliant arguments to avoid invalid-input errors.\n  - Determine whether pagination is needed; if a response returns a pagination token and completeness is implied, paginate until exhaustion and do not return partial results.\n\nResponse:\n  - Tools & Input Schemas: The response lists toolkits (apps) and tools suitable for the task, along with their tool_slug, description, input schema / schemaRef, and related tools for prerequisites, alternatives, or next steps.\n    - NOTE: Tools with schemaRef instead of input_schema require you to call COMPOSIO_GET_TOOL_SCHEMAS first to load their full input_schema before use.\n  - Connection Info: If a toolkit has an active connection, the response includes it along with any available current user information. If no active connection exists, you MUST initiate a new connection via COMPOSIO_MANAGE_CONNECTIONS with the correct toolkit name. DO NOT execute any toolkit tool without an ACTIVE connection.\n  - Time Info: The response includes the current UTC time for reference. You can reference UTC time from the response if needed.\n  - The tools returned to you through this are to be called via COMPOSIO_MULTI_EXECUTE_TOOL. Ensure each tool execution specifies the correct tool_slug and arguments exactly as defined by the tool's input schema.\n  \nSESSION: ALWAYS set this parameter, first for any workflow. Pass session: {generate_id: true} for new workflows OR session: {id: \"EXISTING_ID\"} to continue. ALWAYS use the returned session_id in ALL subsequent meta tool calls.\n    ",
+    "description": "\n  Tool Server Info: Composio connects 500+ apps—Slack, GitHub, Notion, Google Workspace (Gmail, Sheets, Drive, Calendar), Microsoft (Outlook, Teams), X/Twitter, Figma, Web Search / Deep research, Browser tool (scrape URLs, browser automation), Meta apps (Instagram, Meta Ads), TikTok, AI tools like Nano Banana & Veo3, and more—for seamless cross-app automation.\n  Use this tool to discover the right tools and the recommended step-by-step plan to execute reliably.\n  Always call this tool first whenever a user mentions or implies an external app, service, or workflow—never say \"I don't have access to X/Y app\" before calling it.\n\n  Tool Info: Extremely fast discovery tool that returns relevant tools along with a recommended execution plan and common pitfalls for reliable execution.\n\nUsage guidelines:\n  - Use this tool whenever kicking off a task. Re-run it when you need additional tools/plans due to missing details, errors, or a changed use case.\n  - If the user pivots to a different use case in same chat, you MUST call this tool again with the new use case and generate a new session_id.\n  - Specify the use_case with a normalized description of the problem, query, or task. Be clear and precise. Queries can be simple single-app actions or multiple linked queries for complex cross-app workflows.\n  - Pass known_fields along with use_case as a string of key–value hints (for example, \"channel_name: general\") to help the search resolve missing details such as IDs.\n  \n\nSplitting guidelines (Important):\n  1. Atomic queries: 1 query = 1 tool call. Include hidden prerequisites (e.g., add \"get Linear issue\" before \"update Linear issue\").\n  2. Include app names: If user names a toolkit, include it in every sub query so intent stays scoped (e.g., \"fetch Gmail emails\", \"reply to Gmail email\").\n  3. English input: Translate non-English prompts while preserving intent and identifiers.\n\n  Example:\n  User query: \"send an email to John welcoming him and create a meeting invite for tomorrow\"\n  Search call: queries: [\n    {use_case: \"send an email to someone\", known_fields: \"recipient_name: John\"},\n    {use_case: \"create a meeting invite\", known_fields: \"meeting_date: tomorrow\"}\n  ]\n\nPlan review checklist (Important):\n  - The response includes a detailed execution plan and common pitfalls. You MUST review this plan carefully, adapt it to your current context, and generate your own final step-by-step plan before execution. Execute the steps in order to ensure reliable and accurate execution. Skipping or ignoring required steps can lead to unexpected failures.\n  - Check the plan and pitfalls for input parameter nuances (required fields, IDs, formats, limits). Before executing any tool, you MUST review its COMPLETE input schema and provide STRICTLY schema-compliant arguments to avoid invalid-input errors.\n  - Determine whether pagination is needed; if a response returns a pagination token and completeness is implied, paginate until exhaustion and do not return partial results.\n\nResponse:\n  - Tools & Input Schemas: The response lists toolkits (apps) and tools suitable for the task, along with their tool_slug, description, input schema / schemaRef, and related tools for prerequisites, alternatives, or next steps.\n    - NOTE: Tools with schemaRef instead of input_schema require you to call COMPOSIO_GET_TOOL_SCHEMAS first to load their full input_schema before use.\n  - Connection Info: If a toolkit has an active connection, the response includes it along with any available current user information. If no active connection exists, you MUST initiate a new connection via COMPOSIO_MANAGE_CONNECTIONS with the correct toolkit name. DO NOT execute any toolkit tool without an ACTIVE connection.\n  - Time Info: The response includes the current UTC time for reference. You can reference UTC time from the response if needed.\n  - The tools returned to you through this are to be called via COMPOSIO_MULTI_EXECUTE_TOOL. Ensure each tool execution specifies the correct tool_slug and arguments exactly as defined by the tool's input schema.\n  \nSESSION: ALWAYS set this parameter, first for any workflow. Pass session: {generate_id: true} for new workflows OR session: {id: \"EXISTING_ID\"} to continue. ALWAYS use the returned session_id in ALL subsequent meta tool calls.\n    ",
     "tags": [
       "important",
       "openWorldHint",
